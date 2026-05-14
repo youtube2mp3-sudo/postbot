@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GrammarBot — Precise Language for Discord</title>
+  <meta name="description" content="A Discord bot that quietly corrects grammar and spelling — so your server communicates with precision." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ── VARIABLES ─────────────────────────────────────────── */
+    :root {
+      --accent-color: #2563EB;
+      --accent-light: rgba(37, 99, 235, 0.10);
+      --accent-mid:   rgba(37, 99, 235, 0.22);
+
+      --bg:           #F9F9F8;
+      --surface:      #FFFFFF;
+      --surface-2:    #F3F3F1;
+      --border:       #E4E4E0;
+      --border-soft:  rgba(0,0,0,0.06);
+
+      --text-primary:   #0E0E0D;
+      --text-secondary: #5A5A56;
+      --text-muted:     #9A9A95;
+
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md:  0 4px 16px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+      --shadow-lg:  0 12px 40px rgba(0,0,0,0.09), 0 2px 8px rgba(0,0,0,0.05);
+
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+
+      --nav-h: 64px;
+      --max-w: 1060px;
+    }
+
+    /* ── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+
+    /* ── UTILITIES ─────────────────────────────────────────── */
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+
+    /* ── FADE-IN ANIMATIONS ────────────────────────────────── */
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s cubic-bezier(.22,.68,0,1.2),
+                  transform 0.6s cubic-bezier(.22,.68,0,1.2);
+    }
+    .js-ready .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    .js-ready .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.16s; }
+    .reveal-d3 { transition-delay: 0.24s; }
+    .reveal-d4 { transition-delay: 0.32s; }
+
+    /* ── HEADER ────────────────────────────────────────────── */
+    #header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      background: rgba(249,249,248,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+    #header.scrolled {
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+      background: rgba(249,249,248,0.96);
+    }
+    .nav-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    /* Logo */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav-logo-img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+    .nav-logo-wordmark {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    /* Nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+    }
+    .nav-links a {
+      display: block;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--text-primary);
+      background: var(--surface-2);
+    }
+
+    /* Dropdown */
+    .nav-dropdown {
+      position: relative;
+    }
+    .nav-dropdown-trigger {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      background: none;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-dropdown-trigger:hover,
+    .nav-dropdown.open .nav-dropdown-trigger {
+      color: var(--text-primary);
+      background: var(--surface-2);
+    }
+    .nav-dropdown-trigger svg {
+      transition: transform 0.2s;
+    }
+    .nav-dropdown.open .nav-dropdown-trigger svg {
+      transform: rotate(180deg);
+    }
+    .nav-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      padding: 6px;
+      min-width: 160px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s, transform 0.18s;
+    }
+    .nav-dropdown.open .nav-dropdown-menu {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-menu a {
+      display: block;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-dropdown-menu a:hover {
+      background: var(--surface-2);
+      color: var(--text-primary);
+    }
+
+    /* Nav CTA */
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #fff;
+      background: var(--accent-color);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 1px 4px rgba(37,99,235,0.25);
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .nav-cta:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    #hero {
+      padding: 96px 0 0;
+      overflow: hidden;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--accent-color);
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-radius: 999px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent-color);
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 4.5vw, 3.5rem);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent-color);
+    }
+    .hero-subtitle {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 420px;
+      margin-bottom: 36px;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #fff;
+      background: var(--accent-color);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 2px 8px rgba(37,99,235,0.28);
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(37,99,235,0.32);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      transition: color 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-secondary:hover {
+      color: var(--text-primary);
+      border-color: #ccc;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Hero illustration */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .hero-illustration {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* ── WAVE DIVIDER ──────────────────────────────────────── */
+    .wave-divider {
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      margin-top: 80px;
+    }
+    .wave-divider svg {
+      display: block;
+      width: 100%;
+    }
+
+    /* ── STATS ─────────────────────────────────────────────── */
+    #stats {
+      background: var(--surface-2);
+      padding: 72px 0;
+    }
+    .stats-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--border);
+      box-shadow: var(--shadow-md);
+    }
+    .stat-cell {
+      background: var(--surface);
+      padding: 48px 48px;
+      position: relative;
+    }
+    .stat-cell::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 40px;
+      background: var(--accent-color);
+      border-radius: 0 2px 2px 0;
+      margin-top: 40px;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5vw, 4rem);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+    .stat-sub {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 12px;
+      font-size: 0.78rem;
+      color: var(--accent-color);
+      font-weight: 500;
+    }
+
+    /* ── WAVE 2 ────────────────────────────────────────────── */
+    .wave-divider-2 {
+      background: var(--surface-2);
+      line-height: 0;
+    }
+    .wave-divider-2 svg { display: block; width: 100%; }
+
+    /* ── TRUST / DESCRIPTION ───────────────────────────────── */
+    #trust {
+      padding: 88px 0 80px;
+      background: var(--bg);
+    }
+    .trust-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .trust-text-block {}
+    .trust-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .trust-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3vw, 2.4rem);
+      line-height: 1.2;
+      letter-spacing: -0.015em;
+      margin-bottom: 20px;
+    }
+    .trust-body {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+    .trust-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .trust-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+    .trust-list-icon {
+      width: 18px; height: 18px;
+      color: var(--accent-color);
+      flex-shrink: 0;
+    }
+
+    /* Cards */
+    .trust-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .trust-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .trust-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .trust-card-icon-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .trust-card-icon {
+      width: 32px; height: 32px;
+      background: var(--accent-light);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-color);
+      flex-shrink: 0;
+    }
+    .trust-card-title {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .trust-card-desc {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── WAVE 3 ────────────────────────────────────────────── */
+    .wave-divider-3 { line-height: 0; }
+    .wave-divider-3 svg { display: block; width: 100%; }
+
+    /* ── FOOTER ────────────────────────────────────────────── */
+    #footer {
+      background: var(--text-primary);
+      color: rgba(255,255,255,0.5);
+      padding: 56px 0 40px;
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: start;
+      margin-bottom: 48px;
+    }
+    .footer-brand {}
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+    .footer-logo-wordmark {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.9);
+    }
+    .footer-tagline {
+      font-size: 0.85rem;
+      font-weight: 300;
+      max-width: 280px;
+      line-height: 1.7;
+    }
+    .footer-nav {
+      display: flex;
+      gap: 48px;
+    }
+    .footer-nav-col {}
+    .footer-nav-heading {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 14px;
+    }
+    .footer-nav-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-nav-col a {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+    .footer-nav-col a:hover { color: rgba(255,255,255,0.9); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-copy {
+      font-size: 0.8rem;
+    }
+    .footer-invite {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      font-size: 0.83rem;
+      font-weight: 500;
+      color: #fff;
+      background: var(--accent-color);
+      border-radius: var(--radius-sm);
+      transition: opacity 0.2s;
+    }
+    .footer-invite:hover { opacity: 0.85; }
+
+    /* ── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 800px) {
+      :root { --nav-h: 60px; }
+
+      .nav-links, .nav-dropdown { display: none; }
+      .nav-hamburger { display: flex; }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        text-align: center;
+      }
+      .hero-subtitle { margin: 0 auto 36px; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { order: -1; }
+      .hero-illustration { max-width: 300px; }
+
+      .stats-inner {
+        grid-template-columns: 1fr;
+      }
+      .stat-cell { padding: 36px 32px; }
+
+      .trust-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .footer-nav { gap: 32px; }
+    }
+
+    @media (max-width: 500px) {
+      .footer-nav { flex-direction: column; gap: 24px; }
+      .hero-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─────────────────────── HEADER ──────────────────────── -->
+<header id="header" role="banner">
+  <div class="container">
+    <nav class="nav-inner" role="navigation" aria-label="Primary">
+
+      <a href="/" class="nav-logo" aria-label="GrammarBot home">
+        <!-- SVG Logo mark (replace with logo.png via <img> if uploaded) -->
+        <svg class="nav-logo-img" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="var(--accent-color)"/>
+          <path d="M8 22 L14 10 L16 10 L22 22" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M10.2 18 H19.8" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="24" cy="11" r="2.5" fill="white" opacity="0.55"/>
+        </svg>
+        <span class="nav-logo-wordmark">GrammarBot</span>
+      </a>
+
+      <ul class="nav-links" role="list">
+        <li><a href="#stats">Statistics</a></li>
+        <li><a href="#trust">About</a></li>
+        <li>
+          <div class="nav-dropdown" id="navDropdown">
+            <button class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" id="dropdownBtn">
+              Resources
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="nav-dropdown-menu" id="dropdownMenu" role="menu">
+              <a href="#" role="menuitem">Documentation</a>
+              <a href="#" role="menuitem">Commands</a>
+              <a href="#" role="menuitem">Support Server</a>
+              <a href="#" role="menuitem">Changelog</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <a href="#" class="nav-cta" aria-label="Invite GrammarBot to your server">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite Bot
+      </a>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────────────────── HERO ────────────────────────── -->
+<main>
+<section id="hero">
+  <div class="container">
+    <div class="hero-inner">
+
+      <div class="hero-copy">
+        <div class="hero-badge reveal">
+          <span class="hero-badge-dot"></span>
+          Now live on Discord
+        </div>
+        <h1 class="hero-title reveal reveal-d1">
+          Precision language,<br><em>quietly delivered.</em>
+        </h1>
+        <p class="hero-subtitle reveal reveal-d2">
+          GrammarBot corrects spelling and grammar in real time — unobtrusive, accurate, and always on.
+        </p>
+        <div class="hero-actions reveal reveal-d3">
+          <a href="#" class="btn-primary">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path d="M7.5 2 L7.5 13 M2 7.5 L13 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+            Invite Bot
+          </a>
+          <a href="#" class="btn-secondary">
+            Documentation
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- SVG Illustration -->
+      <div class="hero-visual reveal reveal-d2">
+        <svg class="hero-illustration" viewBox="0 0 420 360" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Grammar correction illustration" role="img">
+          <defs>
+            <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
+              <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="rgba(0,0,0,0.08)"/>
+            </filter>
+            <filter id="cardShadow2" x="-10%" y="-10%" width="120%" height="130%">
+              <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.06)"/>
+            </filter>
+          </defs>
+
+          <!-- Background card -->
+          <rect x="30" y="40" width="360" height="230" rx="16" fill="#FFFFFF" filter="url(#cardShadow)"/>
+          <rect x="30" y="40" width="360" height="230" rx="16" stroke="#E4E4E0" stroke-width="1"/>
+
+          <!-- Chat header -->
+          <rect x="30" y="40" width="360" height="52" rx="16" fill="#F3F3F1"/>
+          <rect x="30" y="76" width="360" height="16" fill="#F3F3F1"/>
+
+          <!-- Avatar circles -->
+          <circle cx="62" cy="66" r="14" fill="#E4E4E0"/>
+          <circle cx="62" cy="66" r="8" fill="#C8C8C4"/>
+          <text x="62" y="71" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#888">#</text>
+
+          <!-- Channel name -->
+          <rect x="84" y="60" width="80" height="7" rx="3" fill="#D0D0CC"/>
+          <rect x="84" y="71" width="55" height="5" rx="2" fill="#DDDDD9"/>
+
+          <!-- Message bubble 1 — error -->
+          <rect x="52" y="112" width="270" height="44" rx="10" fill="#FFF8F8" stroke="#F0DADA" stroke-width="1"/>
+          <circle cx="70" cy="120" r="9" fill="#E4E4E0"/>
+          <rect x="86" y="116" width="100" height="5" rx="2" fill="#D0D0CC"/>
+          <!-- Error text line -->
+          <rect x="86" y="126" width="180" height="6" rx="2" fill="#E0C0C0" opacity="0.7"/>
+          <!-- Underline squiggle indicator -->
+          <path d="M86 135 Q90 133 94 135 Q98 137 102 135 Q106 133 110 135 Q114 137 118 135 Q122 133 126 135 Q130 137 134 135 Q138 133 142 135 Q146 137 150 135" stroke="#DC2626" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <rect x="152" y="128" width="40" height="6" rx="2" fill="#D0D0CC" opacity="0.5"/>
+
+          <!-- Correction label -->
+          <rect x="310" y="115" width="65" height="20" rx="5" fill="#FEE2E2" stroke="#FECACA" stroke-width="1"/>
+          <text x="342" y="129" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#DC2626" font-weight="500">error</text>
+
+          <!-- Message bubble 2 — bot correction -->
+          <rect x="52" y="168" width="300" height="68" rx="10" fill="#F0F5FF" stroke="var(--accent-color)" stroke-width="1" stroke-opacity="0.3" filter="url(#cardShadow2)"/>
+
+          <!-- Bot avatar -->
+          <circle cx="70" cy="178" r="9" fill="var(--accent-color)" opacity="0.15"/>
+          <rect x="66" y="174" width="8" height="8" rx="2" fill="var(--accent-color)" opacity="0.6"/>
+
+          <rect x="86" y="174" width="68" height="5" rx="2" fill="var(--accent-color)" opacity="0.3"/>
+          <rect x="158" y="174" width="32" height="5" rx="2" fill="#D0D0CC" opacity="0.5"/>
+
+          <!-- Correction lines -->
+          <rect x="86" y="185" width="200" height="5.5" rx="2" fill="#C8D8F0" opacity="0.7"/>
+          <rect x="86" y="196" width="155" height="5.5" rx="2" fill="#C8D8F0" opacity="0.5"/>
+          <rect x="86" y="207" width="80" height="5.5" rx="2" fill="var(--accent-color)" opacity="0.25"/>
+
+          <!-- Tick icon -->
+          <circle cx="320" cy="196" r="10" fill="var(--accent-color)" opacity="0.1"/>
+          <path d="M315 196 L318 199 L325 192" stroke="var(--accent-color)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+          <!-- Bottom decoration — stats strip -->
+          <rect x="30" y="270" width="360" height="52" rx="12" fill="#F9F9F8" stroke="#E4E4E0" stroke-width="1" filter="url(#cardShadow2)"/>
+          <rect x="50" y="283" width="56" height="6" rx="2" fill="#D0D0CC"/>
+          <rect x="50" y="294" width="40" height="7" rx="2" fill="var(--accent-color)" opacity="0.35"/>
+          <rect x="200" y="283" width="56" height="6" rx="2" fill="#D0D0CC"/>
+          <rect x="200" y="294" width="66" height="7" rx="2" fill="var(--accent-color)" opacity="0.35"/>
+          <!-- vertical divider -->
+          <line x1="165" y1="280" x2="165" y2="312" stroke="#E4E4E0" stroke-width="1"/>
+          <!-- live dot -->
+          <circle cx="340" cy="296" r="5" fill="#22C55E" opacity="0.85"/>
+          <circle cx="340" cy="296" r="8" fill="#22C55E" opacity="0.18"/>
+          <rect x="352" y="292" width="28" height="6" rx="2" fill="#C0C0BC"/>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Wave -->
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,32 C240,64 480,0 720,32 C960,64 1200,0 1440,32 L1440,64 L0,64 Z" fill="var(--surface-2)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─────────────────────── STATS ───────────────────────── -->
+<section id="stats" aria-labelledby="stats-heading">
+  <h2 id="stats-heading" class="sr-only">Statistics</h2>
+  <div style="background: var(--surface-2); padding: 0 0 0;">
+    <div class="container" style="padding-top: 0; padding-bottom: 0;">
+      <div class="stats-inner reveal">
+        <div class="stat-cell">
+          <div class="stat-value" id="stat-servers">0</div>
+          <div class="stat-label">Discord servers</div>
+          <span class="stat-sub">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <circle cx="6" cy="6" r="5" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M4 6 L5.5 7.5 L8 4.5" stroke="var(--accent-color)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Active &amp; growing
+          </span>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value" id="stat-corrections">0</div>
+          <div class="stat-label">Grammar corrections made</div>
+          <span class="stat-sub">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2 6 L5 9 L10 3" stroke="var(--accent-color)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Updated in real time
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wave-divider-2">
+    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,15 1440,30 L1440,60 L0,60 Z" fill="var(--bg)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─────────────────────── TRUST ───────────────────────── */
+<section id="trust" aria-labelledby="trust-heading">
+  <div class="container">
+    <div class="trust-inner">
+
+      <div class="trust-text-block reveal">
+        <p class="trust-eyebrow">How it works</p>
+        <h2 class="trust-heading" id="trust-heading">
+          Correction without<br>interruption.
+        </h2>
+        <p class="trust-body">
+          GrammarBot listens passively in configured channels. When a spelling or grammar issue is detected, it sends a clean, unobtrusive suggestion — preserving the original message and tone.
+        </p>
+        <p class="trust-body">
+          No commands to memorize. No configuration required. Simply invite, and let the bot do its work.
+        </p>
+        <ul class="trust-list">
+          <li>
+            <svg class="trust-list-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="8" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M5.5 9 L7.8 11.3 L12.5 6.5" stroke="var(--accent-color)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Passive — no slash commands required
+          </li>
+          <li>
+            <svg class="trust-list-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="8" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M5.5 9 L7.8 11.3 L12.5 6.5" stroke="var(--accent-color)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Channel-level opt-in control
+          </li>
+          <li>
+            <svg class="trust-list-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="8" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M5.5 9 L7.8 11.3 L12.5 6.5" stroke="var(--accent-color)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Context-aware — not pedantic
+          </li>
+        </ul>
+      </div>
+
+      <div class="trust-cards reveal reveal-d2">
+        <div class="trust-card">
+          <div class="trust-card-icon-row">
+            <div class="trust-card-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8 L6.5 11.5 L13 4.5" stroke="var(--accent-color)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="trust-card-title">Instant corrections</span>
+          </div>
+          <p class="trust-card-desc">Detects errors in milliseconds and responds with a clean, readable suggestion — no delay, no noise.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon-row">
+            <div class="trust-card-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="2" y="3" width="12" height="9" rx="2" stroke="var(--accent-color)" stroke-width="1.4"/>
+                <path d="M5 13 L8 11 L11 13" stroke="var(--accent-color)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="trust-card-title">Channel-scoped</span>
+          </div>
+          <p class="trust-card-desc">Activate only where it matters — support channels, announcements, or the whole server.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon-row">
+            <div class="trust-card-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="5.5" stroke="var(--accent-color)" stroke-width="1.4"/>
+                <path d="M8 5.5 L8 8.5 L10 10" stroke="var(--accent-color)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="trust-card-title">Always available</span>
+          </div>
+          <p class="trust-card-desc">Running on resilient infrastructure with near-zero downtime. Reliable when your server is most active.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="wave-divider-3" style="margin-top: 72px;">
+    <svg viewBox="0 0 1440 56" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,28 C480,56 960,0 1440,28 L1440,56 L0,56 Z" fill="#0E0E0D"/>
+    </svg>
+  </div>
+</section>
+</main>
+
+<!-- ─────────────────────── FOOTER ──────────────────────── -->
+<footer id="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="var(--accent-color)" opacity="0.85"/>
+            <path d="M8 22 L14 10 L16 10 L22 22" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M10.2 18 H19.8" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="24" cy="11" r="2.5" fill="white" opacity="0.55"/>
+          </svg>
+          <span class="footer-logo-wordmark">GrammarBot</span>
+        </div>
+        <p class="footer-tagline">
+          Precise language correction for Discord communities. Small tool, meaningful impact.
+        </p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Product</p>
+          <ul>
+            <li><a href="#">Invite Bot</a></li>
+            <li><a href="#">Commands</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Support</p>
+          <ul>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Discord Server</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Legal</p>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2024 GrammarBot. All rights reserved.</p>
+      <a href="#" class="footer-invite">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite to Discord
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Typed as close to TypeScript intent as inline JS permits ─
+
+  // Header scroll effect
+  const header = document.getElementById('header') as HTMLElement | null;
+  if (header) {
+    const onScroll = (): void => {
+      header.classList.toggle('scrolled', window.scrollY > 10);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  // Dropdown
+  const navDropdown = document.getElementById('navDropdown');
+  const dropdownBtn = document.getElementById('dropdownBtn');
+  if (navDropdown && dropdownBtn) {
+    dropdownBtn.addEventListener('click', (e: Event): void => {
+      e.stopPropagation();
+      const open = navDropdown.classList.toggle('open');
+      dropdownBtn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', (): void => {
+      navDropdown.classList.remove('open');
+      dropdownBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  // Mark body so reveal animations activate only when JS runs
+  document.body.classList.add('js-ready');
+
+  // Intersection observer for reveal
+  const reveals = document.querySelectorAll<HTMLElement>('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).classList.add('visible');
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px' });
+  reveals.forEach(el => revealObserver.observe(el));
+  // Immediately reveal anything already in viewport
+  setTimeout(() => {
+    reveals.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) el.classList.add('visible');
+    });
+  }, 50);
+
+  // Count-up animation
+  interface CounterTarget {
+    el: HTMLElement;
+    target: number;
+    suffix: string;
+    duration: number;
+  }
+
+  const easeOut = (t: number): number => 1 - Math.pow(1 - t, 3);
+
+  const animateCounter = ({ el, target, suffix, duration }: CounterTarget): void => {
+    const start = performance.now();
+    const step = (now: number): void => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = Math.round(easeOut(progress) * target);
+      const formatted = value >= 1000
+        ? value.toLocaleString('en-US')
+        : String(value);
+      el.textContent = formatted + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  const statsSection = document.getElementById('stats');
+  let statsStarted = false;
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !statsStarted) {
+      statsStarted = true;
+      const serversEl = document.getElementById('stat-servers');
+      const correctionsEl = document.getElementById('stat-corrections');
+      if (serversEl) {
+        animateCounter({ el: serversEl, target: 4812, suffix: '', duration: 1800 });
+      }
+      if (correctionsEl) {
+        animateCounter({ el: correctionsEl, target: 2140000, suffix: '', duration: 2200 });
+      }
+    }
+  }, { threshold: 0.3 });
+
+  if (statsSection) statsObserver.observe(statsSection);
+</script>
+</body>
+</html>
