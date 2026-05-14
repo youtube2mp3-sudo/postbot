@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grammerly</title>
+  <meta name="description" content="A Discord bot that ruthlessly corrects grammar and spelling, because somebody has to." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header id="header" role="banner">
+  <nav class="nav-inner" role="navigation" aria-label="Primary">
+    <div class="nav-left">
+      <a href="/" class="nav-logo" aria-label="Grammerly home">
+        <img src="logo.PNG" alt="GrammarBot" class="nav-logo-img" />
+        <span class="nav-logo-wordmark">G r a m m e r l y</span>
+      </a>
+    </div>
+
+    <div class="nav-center">
+      <ul class="nav-links" role="list">
+        <li><a href="#stats">Statistics</a></li>
+        <li><a href="#trust">About</a></li>
+        <li><a href="#status">Status</a></li>
+        <li>
+          <div class="nav-dropdown" id="navDropdown">
+            <button class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" id="dropdownBtn">
+              Resources
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="nav-dropdown-menu" id="dropdownMenu" role="menu">
+              <a href="#" role="menuitem">
+                <svg width="16" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true" style="opacity:0.7;">
+                  <path d="M15.25 1.5C14.09.94 12.85.54 11.55.31a.09.09 0 0 0-.1.05c-.17.3-.36.69-.49.99a12.1 12.1 0 0 0-3.92 0 10.1 10.1 0 0 0-.5-1 .09.09 0 0 0-.1-.04C5.15.54 3.91.94 2.75 1.5a.09.09 0 0 0-.04.03C.4 5.06-.24 8.49.07 11.87c0 .02.01.04.03.05a13.08 13.08 0 0 0 3.95 2 .09.09 0 0 0 .1-.03c.3-.42.57-.86.8-1.33.01-.03 0-.07-.03-.08a8.58 8.58 0 0 1-1.23-.59.09.09 0 0 1-.01-.15c.08-.06.16-.13.24-.19a.09.09 0 0 1 .09-.01c2.58 1.18 5.37 1.18 7.92 0a.09.09 0 0 1 .1.01c.07.07.15.13.24.2a.09.09 0 0 1-.01.14c-.39.23-.8.43-1.23.59-.03.01-.05.05-.03.08.24.47.51.91.8 1.33a.09.09 0 0 0 .1.03 13.04 13.04 0 0 0 3.96-2 .09.09 0 0 0 .03-.05c.36-3.87-.61-7.27-2.69-10.34a.07.07 0 0 0-.04-.03zM6.01 9.75c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.69 1.75-1.55 1.75zm5.99 0c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.68 1.75-1.55 1.75z" fill="#5865F2"/>
+                </svg>
+                Support Server
+              </a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-right">
+      <a href="#" class="nav-cta" aria-label="Invite GrammarBot to your server">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite Bot
+      </a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div class="mobile-drawer" id="mobileDrawer" aria-hidden="true" role="dialog" aria-label="Navigation menu">
+  <ul class="mobile-drawer-links" role="list">
+    <li><a href="#stats">Statistics</a></li>
+    <li><a href="#trust">About</a></li>
+    <li><a href="#status">Status</a></li>
+    <li>
+      <button class="mobile-drawer-resource-btn" id="drawerResBtn" aria-expanded="false">
+        Resources
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <ul class="mobile-drawer-sub" id="drawerResSub" role="list">
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Support Server</a></li>
+      </ul>
+    </li>
+  </ul>
+  <a href="#" class="mobile-drawer-cta">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path d="M7.5 2 L7.5 13 M2 7.5 L13 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    Invite Bot
+  </a>
+</div>
+
+<main>
+<section id="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-copy reveal">
+        <h1 class="hero-title">
+          Your server's most favorite <span class="hero-underline-wrap">grammar teacher.<svg class="hero-wavy-line" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M0,5 C16,1 32,9 48,5 C64,1 80,9 96,5 C112,1 128,9 144,5 C160,1 176,9 200,5" stroke="#2563EB" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </h1>
+        <p class="hero-subtitle">
+          Grammerly lurks in your server 24/7 like a discord mod with nothing better to do, pouncing on every misspelling and mangled sentence so your members finally discover true pain..
+        </p>
+        <div class="hero-actions">
+          <a href="#" class="btn-primary">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path d="M7.5 2 L7.5 13 M2 7.5 L13 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+            Invite Bot
+          </a>
+          <a href="#" class="btn-secondary">
+            Documentation
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal reveal-d2">
+        <div class="dc-window" role="img" aria-label="Discord grammar correction preview">
+          <div class="dc-titlebar">
+            <div class="dc-titlebar-dot"></div>
+            <div class="dc-titlebar-dot"></div>
+            <div class="dc-titlebar-dot"></div>
+          </div>
+          <div class="dc-app">
+            <div class="dc-rail">
+              <div class="dc-rail-icon active" title="My Server">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+                  <path d="M15.25 1.5C14.09.94 12.85.54 11.55.31a.09.09 0 0 0-.1.05c-.17.3-.36.69-.49.99a12.1 12.1 0 0 0-3.92 0 10.1 10.1 0 0 0-.5-1 .09.09 0 0 0-.1-.04C5.15.54 3.91.94 2.75 1.5a.09.09 0 0 0-.04.03C.4 5.06-.24 8.49.07 11.87c0 .02.01.04.03.05a13.08 13.08 0 0 0 3.95 2 .09.09 0 0 0 .1-.03c.3-.42.57-.86.8-1.33.01-.03 0-.07-.03-.08a8.58 8.58 0 0 1-1.23-.59.09.09 0 0 1-.01-.15c.08-.06.16-.13.24-.19a.09.09 0 0 1 .09-.01c2.58 1.18 5.37 1.18 7.92 0a.09.09 0 0 1 .1.01c.07.07.15.13.24.2a.09.09 0 0 1-.01.14c-.39.23-.8.43-1.23.59-.03.01-.05.05-.03.08.24.47.51.91.8 1.33a.09.09 0 0 0 .1.03 13.04 13.04 0 0 0 3.96-2 .09.09 0 0 0 .03-.05c.36-3.87-.61-7.27-2.69-10.34a.07.07 0 0 0-.04-.03zM6.01 9.75c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.69 1.75-1.55 1.75zm5.99 0c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.68 1.75-1.55 1.75z" fill="white"/>
+                </svg>
+              </div>
+              <div class="dc-rail-sep"></div>
+              <div class="dc-rail-icon" style="font-size:9px;color:#DBDEE1;font-weight:700;">AB</div>
+              <div class="dc-rail-icon" style="background:#57F287;color:#23272A;font-size:9px;font-weight:700;">G</div>
+            </div>
+            <div class="dc-sidebar">
+              <div class="dc-server-header">
+                <span class="dc-server-name">My Server</span>
+              </div>
+              <div class="dc-ch-section">
+                <div class="dc-ch-section-label">Text Channels</div>
+                <div class="dc-ch-item"><span class="dc-hash">#</span><span>general</span></div>
+                <div class="dc-ch-item active"><span class="dc-hash">#</span><span>chat</span></div>
+                <div class="dc-ch-item"><span class="dc-hash">#</span><span>off-topic</span></div>
+              </div>
+              <div class="dc-ch-section">
+                <div class="dc-ch-section-label">Bot</div>
+                <div class="dc-ch-item"><span class="dc-hash">#</span><span>commands</span></div>
+              </div>
+            </div>
+            <div class="dc-main">
+              <div class="dc-chat-header">
+                <span class="dc-chat-hash">#</span>
+                <span class="dc-chat-name">chat</span>
+                <div class="dc-chat-divider"></div>
+                <span class="dc-chat-topic">General conversation</span>
+              </div>
+              <div class="dc-msgs" id="dc-msgs">
+                <div class="dc-msg is-first">
+                  <div class="dc-msg-avatar">
+                    <img src="pfp1.JPG" alt="user" onerror="this.style.display='none';this.parentElement.querySelector('.dc-msg-avatar-fb').style.display='flex';" />
+                    <span class="dc-msg-avatar-fb" style="display:none;" id="dc-u1-initial">A</span>
+                  </div>
+                  <div class="dc-msg-body">
+                    <div class="dc-msg-meta">
+                      <span class="dc-uname" id="dc-u1-name">Alex</span>
+                      <span class="dc-msg-ts" id="dc-u1-ts">Today at 3:42 PM</span>
+                    </div>
+                    <div class="dc-msg-text" id="dc-u1-text">hey can you beleive how awsome this update is?? i definately love it</div>
+                  </div>
+                </div>
+                <div class="dc-msg is-first">
+                  <div class="dc-msg-avatar">
+                    <img src="pfp2.JPG" alt="user" onerror="this.style.display='none';this.parentElement.querySelector('.dc-msg-avatar-fb').style.display='flex';" />
+                    <span class="dc-msg-avatar-fb" style="display:none;" id="dc-u2-initial">J</span>
+                  </div>
+                  <div class="dc-msg-body">
+                    <div class="dc-msg-meta">
+                      <span class="dc-uname" id="dc-u2-name">Jordan</span>
+                      <span class="dc-msg-ts" id="dc-u2-ts">Today at 3:43 PM</span>
+                    </div>
+                    <div class="dc-msg-text" id="dc-u2-text">ikr its so good lol</div>
+                  </div>
+                </div>
+                <div class="dc-msg is-first">
+                  <div class="dc-msg-avatar" style="background:#5865F2;">
+                    <svg viewBox="0 0 40 40" width="32" height="32" fill="none">
+                      <rect width="40" height="40" rx="20" fill="#5865F2"/>
+                      <path d="M11 28 L17 14 L20 14 L26 28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                      <path d="M13 23.5 H24" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="dc-msg-body">
+                    <div class="dc-msg-meta">
+                      <span class="dc-uname blurple">Grammerly</span>
+                      <span class="dc-bot-badge">APP</span>
+                      <span class="dc-msg-ts" id="dc-bot-ts">Today at 3:43 PM</span>
+                    </div>
+                    <div class="dc-msg-text" id="dc-bot-text"></div>
+                    <div class="dc-typing" id="dc-typing" style="display:none;">
+                      <span class="dc-typing-dot"></span>
+                      <span class="dc-typing-dot"></span>
+                      <span class="dc-typing-dot"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="dc-input-wrap">
+                <div class="dc-input-box">
+                  <span class="dc-input-placeholder">Message #chat</span>
+                  <svg class="dc-input-action" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="8" stroke="#80848E" stroke-width="1.4"/>
+                    <path d="M6.5 12c.8 1.2 2 1.9 3.5 1.9s2.7-.7 3.5-1.9" stroke="#80848E" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="7.2" cy="8.8" r="0.9" fill="#80848E"/>
+                    <circle cx="12.8" cy="8.8" r="0.9" fill="#80848E"/>
+                  </svg>
+                  <svg class="dc-input-action" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 4v12M4 10h12" stroke="#80848E" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stats" aria-labelledby="stats-heading">
+  <div class="wave-top-stats">
+    <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1380,16 1440,40 L1440,80 L0,80 Z" fill="#F3F3F1"/>
+    </svg>
+  </div>
+  <h2 id="stats-heading" class="sr-only">Statistics</h2>
+  <div class="container">
+    <div class="stats-float reveal">
+      <div class="stat-float-item">
+        <div class="stat-value" id="stat-servers">0</div>
+        <div class="stat-label">servers currently being corrected</div>
+      </div>
+      <div class="stat-float-sep" aria-hidden="true"></div>
+      <div class="stat-float-item">
+        <div class="stat-value" id="stat-corrections">0</div>
+        <div class="stat-label">spelling correctections</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trust">
+  <div class="container">
+    <div class="about-block reveal">
+      <h2 class="about-heading" id="about-heading">Spell check for Discord.</h2>
+      <p class="about-body">
+        Grammerly monitors your server's messages and anoyingly corrects spelling and punctuation errors as they happen. You will either love grammerly or hate it real quickly..
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="status" aria-labelledby="status-heading">
+  <div class="wave-top-status">
+    <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1380,16 1440,40 L1440,80 L0,80 Z" fill="#F3F3F1"/>
+    </svg>
+</div>
+  <div class="status-content">
+    <div class="container">
+      <h2 class="status-heading" id="status-heading">Grammerly Status</h2>
+      <div class="status-panel reveal">
+        <div class="status-metrics">
+          <div class="status-metric">
+            <span class="status-metric-label">Latency</span>
+            <span class="status-metric-value" id="s-latency">...</span>
+            <span class="status-metric-unit" id="s-latency-unit"></span>
+          </div>
+          <div class="status-metric">
+            <span class="status-metric-label">CPU</span>
+            <span class="status-metric-value na">N/A</span>
+            <span class="status-metric-unit">NULL</span>
+          </div>
+          <div class="status-metric">
+            <span class="status-metric-label">Memory</span>
+            <span class="status-metric-value" id="s-memory">...</span>
+            <span class="status-metric-unit" id="s-memory-unit"></span>
+          </div>
+          <div class="status-metric">
+            <span class="status-metric-label">Network</span>
+            <span class="status-metric-value" id="s-network">...</span>
+            <span class="status-metric-unit" id="s-network-unit"></span>
+          </div>
+          <div class="status-metric">
+            <span class="status-metric-label">Uptime</span>
+            <span class="status-metric-value na">N/A</span>
+            <span class="status-metric-unit">NULL</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer id="footer" role="contentinfo">
+  <div class="wave-top-footer">
+    <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <rect width="1440" height="100" fill="#F3F3F1"/>
+      <path d="M0,50 C200,100 400,0 600,50 C800,100 1000,0 1200,42 C1320,62 1400,16 1440,50 L1440,100 L0,100 Z" fill="#0E0E0D"/>
+    </svg>
+  </div>
+  <div class="container footer-content">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="logo.PNG" alt="Grammerly" class="footer-logo-img" />
+          <span class="footer-logo-wordmark">G r a m m e r l y</span>
+        </div>
+        <p class="footer-tagline">
+          The grammar vigilante your server never asked for, but absolutely needs.
+        </p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Product</p>
+          <ul>
+            <li><a href="#">Invite Bot</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Support</p>
+          <ul>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Discord Server</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Legal</p>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 Grammerly. All rights reserved.</p>
+      <a href="#" class="footer-invite">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite to Discord
+      </a>
+    </div>
+  </div>
+</footer>
+
+<div id="cookieBanner" role="dialog" aria-label="Cookie consent" aria-modal="true">
+  <p class="cookie-text"><strong>We use cookies.</strong> This site uses cookies to measure performance and improve your experience.</p>
+  <div class="cookie-actions">
+    <button class="cookie-btn-decline" id="cookieDecline">Decline</button>
+    <button class="cookie-btn-accept" id="cookieAccept">Accept</button>
+  </div>
+</div>
+
+<script src="main.js"></script>
+
+</body>
+</html>
