@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GrammarBot — Precise Language for Discord</title>
+  <meta name="description" content="A Discord bot that quietly corrects grammar and spelling — so your server communicates with precision." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ── VARIABLES ─────────────────────────────────────────── */
+    :root {
+      --accent-color: #2563EB;
+      --accent-light: rgba(37, 99, 235, 0.10);
+      --accent-mid:   rgba(37, 99, 235, 0.22);
+
+      --bg:           #F9F9F8;
+      --surface:      #FFFFFF;
+      --surface-2:    #F3F3F1;
+      --border:       #E4E4E0;
+      --border-soft:  rgba(0,0,0,0.06);
+
+      --text-primary:   #0E0E0D;
+      --text-secondary: #5A5A56;
+      --text-muted:     #9A9A95;
+
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md:  0 4px 16px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+      --shadow-lg:  0 12px 40px rgba(0,0,0,0.09), 0 2px 8px rgba(0,0,0,0.05);
+
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+
+      --nav-h: 64px;
+      --max-w: 1060px;
+
+      /* Discord palette */
+      --dc-bg:      #313338;
+      --dc-sidebar: #2B2D31;
+      --dc-input:   #383A40;
+      --dc-text:    #DBDEE1;
+      --dc-muted:   #80848E;
+      --dc-hover:   rgba(255,255,255,0.06);
+      --dc-green:   #23A55A;
+      --dc-blurple: #5865F2;
+    }
+
+    /* ── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+    svg { display: block; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+
+    /* ── UTILITIES ─────────────────────────────────────────── */
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+
+    /* ── FADE-IN ANIMATIONS ────────────────────────────────── */
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s cubic-bezier(.22,.68,0,1.2),
+                  transform 0.6s cubic-bezier(.22,.68,0,1.2);
+    }
+    .js-ready .reveal { opacity: 0; transform: translateY(18px); }
+    .js-ready .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.16s; }
+    .reveal-d3 { transition-delay: 0.24s; }
+    .reveal-d4 { transition-delay: 0.32s; }
+
+    /* ── HEADER ────────────────────────────────────────────── */
+    #header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: var(--nav-h);
+      background: rgba(249,249,248,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+    #header.scrolled {
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+      background: rgba(249,249,248,0.96);
+    }
+    .nav-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    /* Logo */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav-logo-img { width: 32px; height: 32px; object-fit: contain; }
+    .nav-logo-wordmark {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    /* Nav links */
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a {
+      display: block;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-primary); background: var(--surface-2); }
+
+    /* Dropdown */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-trigger {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px;
+      font-size: 0.875rem; font-weight: 400;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      background: none;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-dropdown-trigger:hover,
+    .nav-dropdown.open .nav-dropdown-trigger { color: var(--text-primary); background: var(--surface-2); }
+    .nav-dropdown-trigger svg { transition: transform 0.2s; }
+    .nav-dropdown.open .nav-dropdown-trigger svg { transform: rotate(180deg); }
+    .nav-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      padding: 6px; min-width: 160px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.18s, transform 0.18s;
+      z-index: 300;
+    }
+    .nav-dropdown.open .nav-dropdown-menu {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-menu a {
+      display: block; padding: 8px 12px;
+      font-size: 0.85rem; color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-dropdown-menu a:hover { background: var(--surface-2); color: var(--text-primary); }
+
+    /* Nav CTA */
+    .nav-cta {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 18px;
+      font-size: 0.875rem; font-weight: 500;
+      color: #fff; background: var(--accent-color);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 1px 4px rgba(37,99,235,0.25);
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+
+    /* ── HAMBURGER ─────────────────────────────────────────── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px; height: 36px;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+      z-index: 210;
+      transition: background 0.2s;
+    }
+    .nav-hamburger:hover { background: var(--surface-2); }
+    .nav-hamburger span {
+      display: block;
+      width: 20px; height: 1.5px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.2s ease;
+      transform-origin: center;
+    }
+    .nav-hamburger.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── MOBILE DRAWER ─────────────────────────────────────── */
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      top: var(--nav-h); left: 0; right: 0; bottom: 0;
+      z-index: 190;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 24px 28px 48px;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .mobile-drawer.is-open {
+      opacity: 1; transform: translateY(0); pointer-events: auto;
+    }
+    .mobile-drawer-links {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 2px;
+      margin-bottom: 20px;
+    }
+    .mobile-drawer-links > li > a,
+    .mobile-drawer-resource-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; text-align: left;
+      padding: 13px 14px;
+      font-size: 1rem; font-weight: 400;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+    .mobile-drawer-links > li > a:hover,
+    .mobile-drawer-resource-btn:hover { background: var(--surface-2); color: var(--text-primary); }
+    .mobile-drawer-resource-btn svg { transition: transform 0.2s; flex-shrink: 0; }
+    .mobile-drawer-resource-btn.sub-open svg { transform: rotate(180deg); }
+    .mobile-drawer-sub {
+      list-style: none;
+      display: none; flex-direction: column; gap: 2px;
+      padding: 4px 0 4px 16px;
+    }
+    .mobile-drawer-sub.open { display: flex; }
+    .mobile-drawer-sub a {
+      display: block; padding: 10px 14px;
+      font-size: 0.9rem; color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      transition: background 0.15s, color 0.15s;
+    }
+    .mobile-drawer-sub a:hover { background: var(--surface-2); color: var(--text-primary); }
+    .mobile-drawer-cta {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px;
+      font-size: 1rem; font-weight: 500;
+      color: #fff; background: var(--accent-color);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 2px 8px rgba(37,99,235,0.28);
+      transition: opacity 0.2s; margin-top: 8px;
+    }
+    .mobile-drawer-cta:hover { opacity: 0.9; }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    #hero { padding: 96px 0 0; overflow: hidden; }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      font-size: 0.78rem; font-weight: 500; letter-spacing: 0.04em;
+      color: var(--accent-color);
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-radius: 999px; margin-bottom: 20px; text-transform: uppercase;
+    }
+    .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-color); }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 4.5vw, 3.5rem);
+      line-height: 1.12; letter-spacing: -0.02em;
+      color: var(--text-primary); margin-bottom: 20px;
+    }
+    .hero-title em { font-style: italic; color: var(--accent-color); }
+    .hero-subtitle {
+      font-size: 1.05rem; font-weight: 300;
+      color: var(--text-secondary); line-height: 1.7;
+      max-width: 420px; margin-bottom: 36px;
+    }
+    .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px;
+      font-size: 0.9rem; font-weight: 500;
+      color: #fff; background: var(--accent-color);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 2px 8px rgba(37,99,235,0.28);
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.32); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 20px;
+      font-size: 0.9rem; font-weight: 400;
+      color: var(--text-secondary); background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      transition: color 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-secondary:hover { color: var(--text-primary); border-color: #ccc; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+    /* Hero visual */
+    .hero-visual { display: flex; justify-content: center; align-items: center; }
+
+    /* ══════════════════════════════════════════════════════════
+       DISCORD MOCKUP
+    ══════════════════════════════════════════════════════════ */
+    .dc-window {
+      width: 100%; max-width: 360px;
+      border-radius: 10px; overflow: hidden;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.18);
+      font-family: 'gg sans', 'Noto Sans', Whitney, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      line-height: 1.375;
+      display: flex; flex-direction: column;
+      background: var(--dc-bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* macOS title bar */
+    .dc-titlebar {
+      height: 22px; background: #1E1F22;
+      display: flex; align-items: center; padding: 0 12px; gap: 7px; flex-shrink: 0;
+    }
+    .dc-titlebar-dot { display: none; }
+
+    /* App body */
+    .dc-app { display: flex; height: 300px; }
+
+    /* ── Server icon rail ── */
+    .dc-rail {
+      width: 48px; background: #1E1F22;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px 0; gap: 8px; flex-shrink: 0;
+    }
+    .dc-rail-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #313338;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: var(--dc-text);
+      cursor: pointer; flex-shrink: 0; overflow: hidden;
+      transition: border-radius 0.15s;
+    }
+    .dc-rail-icon.active { border-radius: 10px; background: var(--dc-blurple); }
+    .dc-rail-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .dc-rail-sep { width: 24px; height: 1px; background: #3F4147; border-radius: 1px; flex-shrink: 0; }
+
+    /* ── Channel sidebar ── */
+    .dc-sidebar {
+      width: 140px; background: var(--dc-sidebar);
+      display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden;
+    }
+    .dc-server-header {
+      height: 48px;
+      display: flex; align-items: center;
+      padding: 0 12px; gap: 6px;
+      border-bottom: 1px solid rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+    .dc-server-name {
+      font-size: 0.875rem; font-weight: 600; color: var(--dc-text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .dc-ch-section { padding: 16px 6px 4px; }
+    .dc-ch-section-label {
+      font-size: 0.67rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--dc-muted);
+      padding: 0 6px; margin-bottom: 2px;
+    }
+    .dc-ch-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 6px; border-radius: 4px;
+      font-size: 0.875rem; color: var(--dc-muted);
+      cursor: pointer; white-space: nowrap; overflow: hidden;
+      transition: background 0.1s, color 0.1s;
+    }
+    .dc-ch-item:hover { background: var(--dc-hover); color: #C3C6CC; }
+    .dc-ch-item.active { background: rgba(255,255,255,0.1); color: var(--dc-text); }
+    .dc-hash { font-size: 1rem; color: var(--dc-muted); line-height: 1; flex-shrink: 0; }
+    .dc-ch-item.active .dc-hash { color: #C3C6CC; }
+
+    /* ── Main chat column ── */
+    .dc-main {
+      flex: 1; display: flex; flex-direction: column;
+      background: var(--dc-bg); overflow: hidden; min-width: 0;
+    }
+
+    /* Chat header */
+    .dc-chat-header {
+      height: 48px; flex-shrink: 0;
+      display: flex; align-items: center;
+      padding: 0 12px; gap: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.3);
+    }
+    .dc-chat-hash { font-size: 1.25rem; font-weight: 900; color: var(--dc-muted); line-height: 1; }
+    .dc-chat-name { font-size: 0.9375rem; font-weight: 700; color: var(--dc-text); }
+    .dc-chat-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.12); margin: 0 2px; }
+    .dc-chat-topic { font-size: 0.8125rem; color: var(--dc-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Message list */
+    .dc-msgs {
+      flex: 1; overflow: hidden;
+      padding: 12px 0 8px;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      gap: 0;
+    }
+
+    /* Individual message */
+    .dc-msg {
+      position: relative;
+      display: flex;
+      padding: 2px 12px 2px 56px;
+      min-height: 22px;
+    }
+    .dc-msg:hover { background: rgba(0,0,0,0.06); }
+    .dc-msg.is-first {
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    /* Avatar positioned absolutely in left column */
+    .dc-msg-avatar {
+      position: absolute; left: 8px; top: 8px;
+      width: 32px; height: 32px; border-radius: 50%;
+      overflow: hidden; background: #36393F;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .dc-msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .dc-msg-avatar-fb { font-size: 0.8rem; font-weight: 700; color: var(--dc-text); }
+
+    .dc-msg-body { flex: 1; min-width: 0; }
+
+    /* Name + timestamp row */
+    .dc-msg-meta {
+      display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px;
+      flex-wrap: wrap;
+    }
+    .dc-uname { font-size: 0.9375rem; font-weight: 500; color: var(--dc-text); line-height: 1.2; }
+    .dc-uname.blurple { color: #C9CDFB; }
+    .dc-bot-badge {
+      display: inline-flex; align-items: center;
+      padding: 0 4px; height: 15px;
+      font-size: 0.625rem; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase;
+      color: #fff; background: var(--dc-blurple);
+      border-radius: 3px; line-height: 1; vertical-align: middle;
+    }
+    .dc-msg-ts { font-size: 0.6875rem; color: var(--dc-muted); }
+
+    /* Message text */
+    .dc-msg-text { font-size: 0.9375rem; color: var(--dc-text); line-height: 1.4; word-break: break-word; }
+    .dc-msg-text.muted { color: var(--dc-muted); font-size: 0.875rem; }
+    .dc-strike { text-decoration: line-through; color: var(--dc-muted); }
+    .dc-correct { color: #23A55A; font-weight: 500; }
+
+    /* Discord embed */
+    .dc-embed {
+      display: flex; margin-top: 6px;
+      max-width: 100%;
+      border-radius: 4px; overflow: hidden;
+      background: #2B2D31;
+    }
+    .dc-embed-accent { width: 4px; background: #23A55A; flex-shrink: 0; }
+    .dc-embed-inner { padding: 10px 12px 12px; flex: 1; min-width: 0; }
+    .dc-embed-author-row {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+    }
+    .dc-embed-author-icon {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--dc-blurple);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .dc-embed-author-name { font-size: 0.75rem; font-weight: 600; color: var(--dc-text); }
+    .dc-embed-title { font-size: 0.875rem; font-weight: 700; color: #23A55A; margin-bottom: 6px; }
+    .dc-embed-desc {
+      font-size: 0.8125rem; color: var(--dc-muted); line-height: 1.5;
+      display: flex; flex-wrap: wrap; gap: 6px 12px;
+    }
+    .dc-embed-desc b { color: var(--dc-text); font-weight: 500; }
+    .dc-correction-pair { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .dc-embed-field { margin-top: 10px; }
+    .dc-embed-field-name { font-size: 0.75rem; font-weight: 700; color: var(--dc-text); margin-bottom: 3px; }
+    .dc-embed-field-val { font-size: 0.8125rem; color: var(--dc-text); line-height: 1.5; }
+
+    /* Reaction */
+    .dc-reactions { display: flex; gap: 4px; margin-top: 6px; }
+    .dc-reaction {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 7px;
+      background: rgba(88,101,242,0.15);
+      border: 1px solid rgba(88,101,242,0.3);
+      border-radius: 4px;
+      font-size: 0.75rem; color: #8EA1E1;
+      cursor: pointer;
+    }
+    .dc-reaction-em { font-size: 0.875rem; line-height: 1; }
+
+    /* Input bar */
+    .dc-input-wrap { padding: 0 12px 12px; flex-shrink: 0; }
+    .dc-input-box {
+      background: var(--dc-input);
+      border-radius: 8px; padding: 11px 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dc-input-placeholder { flex: 1; font-size: 0.9375rem; color: var(--dc-muted); }
+    .dc-input-action { width: 20px; height: 20px; color: var(--dc-muted); opacity: 0.8; }
+
+    /* ── WAVE DIVIDER ──────────────────────────────────────── */
+    .wave-divider { width: 100%; overflow: hidden; line-height: 0; margin-top: 80px; }
+    .wave-divider svg { display: block; width: 100%; }
+
+    /* ── STATS ─────────────────────────────────────────────── */
+    #stats { background: var(--surface-2); padding: 72px 0; }
+    .stats-inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; background: var(--border); box-shadow: var(--shadow-md);
+    }
+    .stat-cell { background: var(--surface); padding: 48px 48px; position: relative; }
+    .stat-cell::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 3px; height: 40px; background: var(--accent-color);
+      border-radius: 0 2px 2px 0; margin-top: 40px;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5vw, 4rem); letter-spacing: -0.03em; line-height: 1;
+      color: var(--text-primary); margin-bottom: 10px; font-variant-numeric: tabular-nums;
+    }
+    .stat-label { font-size: 0.9rem; font-weight: 400; color: var(--text-muted); letter-spacing: 0.01em; }
+    .stat-sub { display: inline-flex; align-items: center; gap: 5px; margin-top: 12px; font-size: 0.78rem; color: var(--accent-color); font-weight: 500; }
+
+    /* ── WAVE 2 ────────────────────────────────────────────── */
+    .wave-divider-2 { background: var(--surface-2); line-height: 0; }
+    .wave-divider-2 svg { display: block; width: 100%; }
+
+    /* ── TRUST ─────────────────────────────────────────────── */
+    #trust { padding: 88px 0 80px; background: var(--bg); }
+    .trust-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .trust-eyebrow { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    .trust-heading { font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.2; letter-spacing: -0.015em; margin-bottom: 20px; }
+    .trust-body { font-size: 0.95rem; font-weight: 300; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px; }
+    .trust-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+    .trust-list li { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; color: var(--text-secondary); }
+    .trust-list-icon { width: 18px; height: 18px; color: var(--accent-color); flex-shrink: 0; }
+    .trust-cards { display: flex; flex-direction: column; gap: 16px; }
+    .trust-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 20px 24px; box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .trust-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .trust-card-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .trust-card-icon {
+      width: 32px; height: 32px; background: var(--accent-light); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; color: var(--accent-color); flex-shrink: 0;
+    }
+    .trust-card-title { font-size: 0.92rem; font-weight: 500; color: var(--text-primary); }
+    .trust-card-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── WAVE 3 ────────────────────────────────────────────── */
+    .wave-divider-3 { line-height: 0; display: block; }
+    .wave-divider-3 svg { display: block; width: 100%; margin-bottom: -2px; }
+
+    /* ── FOOTER ────────────────────────────────────────────── */
+    #footer { background: var(--text-primary); color: rgba(255,255,255,0.5); padding: 56px 0 40px; }
+    .footer-inner { display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: start; margin-bottom: 48px; }
+    .footer-logo { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+    .footer-logo-wordmark { font-family: var(--font-display); font-size: 1.05rem; color: rgba(255,255,255,0.9); }
+    .footer-tagline { font-size: 0.85rem; font-weight: 300; max-width: 280px; line-height: 1.7; }
+    .footer-nav { display: flex; gap: 48px; }
+    .footer-nav-heading { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 14px; }
+    .footer-nav-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-nav-col a { font-size: 0.875rem; color: rgba(255,255,255,0.5); transition: color 0.2s; }
+    .footer-nav-col a:hover { color: rgba(255,255,255,0.9); }
+    .footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.08); gap: 16px; flex-wrap: wrap; }
+    .footer-copy { font-size: 0.8rem; }
+    .footer-invite {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 18px; font-size: 0.83rem; font-weight: 500;
+      color: #fff; background: var(--accent-color);
+      border-radius: var(--radius-sm); transition: opacity 0.2s;
+    }
+    .footer-invite:hover { opacity: 0.85; }
+
+    /* ── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 800px) {
+      :root { --nav-h: 60px; }
+      .nav-links, .nav-dropdown, .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      .mobile-drawer { display: block; }
+
+      /* Hero: single column, copy on top, buttons below copy, preview at very bottom */
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+      .hero-copy { order: 1; }
+      .hero-subtitle { margin: 0 auto 36px; }
+      .hero-actions { justify-content: center; }
+      /* Preview moves below buttons (after .hero-copy which has order:1) */
+      .hero-visual {
+        order: 2;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .dc-window { max-width: 100%; font-size: 11px; }
+      .dc-app { height: auto; min-height: 280px; }
+      .dc-sidebar { width: 110px; }
+
+      .stats-inner { grid-template-columns: 1fr; }
+      .stat-cell { padding: 36px 32px; }
+      .trust-inner { grid-template-columns: 1fr; gap: 48px; }
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .footer-nav { gap: 32px; }
+    }
+    @media (max-width: 500px) {
+      .footer-nav { flex-direction: column; gap: 24px; }
+      .hero-title { font-size: 2rem; }
+      .dc-rail { width: 40px; }
+      .dc-sidebar { width: 96px; }
+      .dc-window { font-size: 12px; }
+      .dc-ch-section-label { font-size: 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─────────────────────── HEADER ──────────────────────── -->
+<header id="header" role="banner">
+  <div class="container">
+    <nav class="nav-inner" role="navigation" aria-label="Primary">
+
+      <a href="/" class="nav-logo" aria-label="GrammarBot home">
+        <svg class="nav-logo-img" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="var(--accent-color)"/>
+          <path d="M8 22 L14 10 L16 10 L22 22" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M10.2 18 H19.8" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="24" cy="11" r="2.5" fill="white" opacity="0.55"/>
+        </svg>
+        <span class="nav-logo-wordmark">GrammarBot</span>
+      </a>
+
+      <ul class="nav-links" role="list">
+        <li><a href="#stats">Statistics</a></li>
+        <li><a href="#trust">About</a></li>
+        <li>
+          <div class="nav-dropdown" id="navDropdown">
+            <button class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" id="dropdownBtn">
+              Resources
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="nav-dropdown-menu" id="dropdownMenu" role="menu">
+              <a href="#" role="menuitem">Documentation</a>
+              <a href="#" role="menuitem">Commands</a>
+              <a href="#" role="menuitem">Support Server</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <a href="#" class="nav-cta" aria-label="Invite GrammarBot to your server">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite Bot
+      </a>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────────────────── MOBILE DRAWER ───────────────── -->
+<div class="mobile-drawer" id="mobileDrawer" aria-hidden="true" role="dialog" aria-label="Navigation menu">
+  <ul class="mobile-drawer-links" role="list">
+    <li><a href="#stats">Statistics</a></li>
+    <li><a href="#trust">About</a></li>
+    <li>
+      <button class="mobile-drawer-resource-btn" id="drawerResBtn" aria-expanded="false">
+        Resources
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <ul class="mobile-drawer-sub" id="drawerResSub" role="list">
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Commands</a></li>
+        <li><a href="#">Support Server</a></li>
+      </ul>
+    </li>
+  </ul>
+  <a href="#" class="mobile-drawer-cta">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path d="M7.5 2 L7.5 13 M2 7.5 L13 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    Invite Bot
+  </a>
+</div>
+
+<!-- ─────────────────────── HERO ────────────────────────── -->
+<main>
+<section id="hero">
+  <div class="container">
+    <div class="hero-inner">
+
+      <div class="hero-copy">
+        <div class="hero-badge reveal">
+          <span class="hero-badge-dot"></span>
+          Now live on Discord
+        </div>
+        <h1 class="hero-title reveal reveal-d1">
+          Precision language,<br><em>quietly delivered.</em>
+        </h1>
+        <p class="hero-subtitle reveal reveal-d2">
+          GrammarBot corrects spelling and grammar in real time — unobtrusive, accurate, and always on.
+        </p>
+        <div class="hero-actions reveal reveal-d3">
+          <a href="#" class="btn-primary">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path d="M7.5 2 L7.5 13 M2 7.5 L13 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+            Invite Bot
+          </a>
+          <a href="#" class="btn-secondary">
+            Documentation
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- ───── DISCORD MOCKUP ───── -->
+      <div class="hero-visual reveal reveal-d2">
+        <div class="dc-window" role="img" aria-label="Discord grammar correction preview">
+
+          <!-- macOS title bar -->
+          <div class="dc-titlebar">
+            <div class="dc-titlebar-dot dc-dot-red"></div>
+            <div class="dc-titlebar-dot dc-dot-yellow"></div>
+            <div class="dc-titlebar-dot dc-dot-green"></div>
+          </div>
+
+          <div class="dc-app">
+
+            <!-- Server icon rail -->
+            <div class="dc-rail">
+              <div class="dc-rail-icon active" title="My Server">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+                  <path d="M15.25 1.5C14.09.94 12.85.54 11.55.31a.09.09 0 0 0-.1.05c-.17.3-.36.69-.49.99a12.1 12.1 0 0 0-3.92 0 10.1 10.1 0 0 0-.5-1 .09.09 0 0 0-.1-.04C5.15.54 3.91.94 2.75 1.5a.09.09 0 0 0-.04.03C.4 5.06-.24 8.49.07 11.87c0 .02.01.04.03.05a13.08 13.08 0 0 0 3.95 2 .09.09 0 0 0 .1-.03c.3-.42.57-.86.8-1.33.01-.03 0-.07-.03-.08a8.58 8.58 0 0 1-1.23-.59.09.09 0 0 1-.01-.15c.08-.06.16-.13.24-.19a.09.09 0 0 1 .09-.01c2.58 1.18 5.37 1.18 7.92 0a.09.09 0 0 1 .1.01c.07.07.15.13.24.2a.09.09 0 0 1-.01.14c-.39.23-.8.43-1.23.59-.03.01-.05.05-.03.08.24.47.51.91.8 1.33a.09.09 0 0 0 .1.03 13.04 13.04 0 0 0 3.96-2 .09.09 0 0 0 .03-.05c.36-3.87-.61-7.27-2.69-10.34a.07.07 0 0 0-.04-.03zM6.01 9.75c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.69 1.75-1.55 1.75zm5.99 0c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.68 1.75-1.55 1.75z" fill="white"/>
+                </svg>
+              </div>
+              <div class="dc-rail-sep"></div>
+              <div class="dc-rail-icon" style="font-size:9px;color:#DBDEE1;font-weight:700;">AB</div>
+              <div class="dc-rail-icon" style="background:#57F287;color:#23272A;font-size:9px;font-weight:700;">G</div>
+            </div>
+
+            <!-- Channel sidebar -->
+            <div class="dc-sidebar">
+              <div class="dc-server-header">
+                <span class="dc-server-name">My Server</span>
+              </div>
+              <div class="dc-ch-section">
+                <div class="dc-ch-section-label">Text Channels</div>
+                <div class="dc-ch-item">
+                  <span class="dc-hash">#</span><span>general</span>
+                </div>
+                <div class="dc-ch-item active">
+                  <span class="dc-hash">#</span><span>chat</span>
+                </div>
+                <div class="dc-ch-item">
+                  <span class="dc-hash">#</span><span>off-topic</span>
+                </div>
+              </div>
+              <div class="dc-ch-section">
+                <div class="dc-ch-section-label">Bot</div>
+                <div class="dc-ch-item">
+                  <span class="dc-hash">#</span><span>commands</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main chat -->
+            <div class="dc-main">
+              <div class="dc-chat-header">
+                <span class="dc-chat-hash">#</span>
+                <span class="dc-chat-name">chat</span>
+                <div class="dc-chat-divider"></div>
+                <span class="dc-chat-topic">General conversation</span>
+              </div>
+
+              <div class="dc-msgs">
+
+                <!-- Message 1: Alex -->
+                <div class="dc-msg is-first">
+                  <div class="dc-msg-avatar">
+                    <img src="pfp1.PNG" alt="Alex"
+                         onerror="this.style.display='none';this.parentElement.querySelector('.dc-msg-avatar-fb').style.display='flex';" />
+                    <span class="dc-msg-avatar-fb" style="display:none;">A</span>
+                  </div>
+                  <div class="dc-msg-body">
+                    <div class="dc-msg-meta">
+                      <span class="dc-uname">Alex</span>
+                      <span class="dc-msg-ts">Today at 3:42 PM</span>
+                    </div>
+                    <div class="dc-msg-text">
+                      hey can you beleive how awsome this update is?? i definately love it
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Message 2: Jordan -->
+                <div class="dc-msg is-first">
+                  <div class="dc-msg-avatar">
+                    <img src="pfp2.PNG" alt="Jordan"
+                         onerror="this.style.display='none';this.parentElement.querySelector('.dc-msg-avatar-fb').style.display='flex';" />
+                    <span class="dc-msg-avatar-fb" style="display:none;">J</span>
+                  </div>
+                  <div class="dc-msg-body">
+                    <div class="dc-msg-meta">
+                      <span class="dc-uname">Jordan</span>
+                      <span class="dc-msg-ts">Today at 3:43 PM</span>
+                    </div>
+                    <div class="dc-msg-text">ikr its so good lol</div>
+                  </div>
+                </div>
+
+                <!-- Message 3: GrammarBot -->
+                <div class="dc-msg is-first">
+                  <div class="dc-msg-avatar" style="background:#5865F2;">
+                    <svg viewBox="0 0 40 40" width="32" height="32" fill="none">
+                      <rect width="40" height="40" rx="20" fill="#5865F2"/>
+                      <path d="M11 28 L17 14 L20 14 L26 28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                      <path d="M13 23.5 H24" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="dc-msg-body">
+                    <div class="dc-msg-meta">
+                      <span class="dc-uname blurple">GrammarBot</span>
+                      <span class="dc-bot-badge">APP</span>
+                      <span class="dc-msg-ts">Today at 3:43 PM</span>
+                    </div>
+                    <div class="dc-msg-text"><em>*believe &nbsp;*awesome &nbsp;*definitely</em></div>
+                  </div>
+                </div>
+
+              </div><!-- end dc-msgs -->
+
+              <!-- Input bar -->
+              <div class="dc-input-wrap">
+                <div class="dc-input-box">
+                  <span class="dc-input-placeholder">Message #chat</span>
+                  <svg class="dc-input-action" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="8" stroke="#80848E" stroke-width="1.4"/>
+                    <path d="M6.5 12c.8 1.2 2 1.9 3.5 1.9s2.7-.7 3.5-1.9" stroke="#80848E" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="7.2" cy="8.8" r="0.9" fill="#80848E"/>
+                    <circle cx="12.8" cy="8.8" r="0.9" fill="#80848E"/>
+                  </svg>
+                  <svg class="dc-input-action" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 4v12M4 10h12" stroke="#80848E" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+
+            </div><!-- end dc-main -->
+          </div><!-- end dc-app -->
+        </div><!-- end dc-window -->
+      </div><!-- end hero-visual -->
+
+    </div>
+  </div>
+
+  <!-- Wave -->
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 96" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,48 C180,96 360,0 540,48 C720,96 900,0 1080,48 C1260,96 1380,20 1440,48 L1440,96 L0,96 Z" fill="var(--surface-2)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─────────────────────── STATS ───────────────────────── -->
+<section id="stats" aria-labelledby="stats-heading">
+  <h2 id="stats-heading" class="sr-only">Statistics</h2>
+  <div style="background: var(--surface-2);">
+    <div class="container">
+      <div class="stats-inner reveal">
+        <div class="stat-cell">
+          <div class="stat-value" id="stat-servers">0</div>
+          <div class="stat-label">Discord servers</div>
+          <span class="stat-sub">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <circle cx="6" cy="6" r="5" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M4 6 L5.5 7.5 L8 4.5" stroke="var(--accent-color)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Active &amp; growing
+          </span>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value" id="stat-corrections">0</div>
+          <div class="stat-label">Grammar corrections made</div>
+          <span class="stat-sub">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2 6 L5 9 L10 3" stroke="var(--accent-color)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Updated in real time
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wave-divider-2">
+    <svg viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,45 C240,90 480,0 720,45 C900,80 1200,10 1440,45 L1440,90 L0,90 Z" fill="var(--bg)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─────────────────────── TRUST ───────────────────────── -->
+<section id="trust" aria-labelledby="trust-heading">
+  <div class="container">
+    <div class="trust-inner">
+
+      <div class="trust-text-block reveal">
+        <p class="trust-eyebrow">How it works</p>
+        <h2 class="trust-heading" id="trust-heading">
+          Correction without<br>interruption.
+        </h2>
+        <p class="trust-body">
+          GrammarBot listens passively in configured channels. When a spelling or grammar issue is detected, it sends a clean, unobtrusive suggestion — preserving the original message and tone.
+        </p>
+        <p class="trust-body">
+          No commands to memorize. No configuration required. Simply invite, and let the bot do its work.
+        </p>
+        <ul class="trust-list">
+          <li>
+            <svg class="trust-list-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="8" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M5.5 9 L7.8 11.3 L12.5 6.5" stroke="var(--accent-color)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Passive — no slash commands required
+          </li>
+          <li>
+            <svg class="trust-list-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="8" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M5.5 9 L7.8 11.3 L12.5 6.5" stroke="var(--accent-color)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Channel-level opt-in control
+          </li>
+          <li>
+            <svg class="trust-list-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="8" stroke="var(--accent-color)" stroke-width="1.2"/>
+              <path d="M5.5 9 L7.8 11.3 L12.5 6.5" stroke="var(--accent-color)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Context-aware — not pedantic
+          </li>
+        </ul>
+      </div>
+
+      <div class="trust-cards reveal reveal-d2">
+        <div class="trust-card">
+          <div class="trust-card-icon-row">
+            <div class="trust-card-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8 L6.5 11.5 L13 4.5" stroke="var(--accent-color)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="trust-card-title">Instant corrections</span>
+          </div>
+          <p class="trust-card-desc">Detects errors in milliseconds and responds with a clean, readable suggestion — no delay, no noise.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon-row">
+            <div class="trust-card-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="2" y="3" width="12" height="9" rx="2" stroke="var(--accent-color)" stroke-width="1.4"/>
+                <path d="M5 13 L8 11 L11 13" stroke="var(--accent-color)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="trust-card-title">Channel-scoped</span>
+          </div>
+          <p class="trust-card-desc">Activate only where it matters — support channels, announcements, or the whole server.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-card-icon-row">
+            <div class="trust-card-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="5.5" stroke="var(--accent-color)" stroke-width="1.4"/>
+                <path d="M8 5.5 L8 8.5 L10 10" stroke="var(--accent-color)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="trust-card-title">Always available</span>
+          </div>
+          <p class="trust-card-desc">Running on resilient infrastructure with near-zero downtime. Reliable when your server is most active.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="wave-divider-3" style="margin-top: 72px;">
+    <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,50 C200,100 400,0 600,50 C800,100 1000,0 1200,40 C1320,65 1400,20 1440,50 L1440,100 L0,100 Z" fill="#0E0E0D"/>
+    </svg>
+  </div>
+</section>
+</main>
+
+<!-- ─────────────────────── FOOTER ──────────────────────── -->
+<footer id="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="var(--accent-color)" opacity="0.85"/>
+            <path d="M8 22 L14 10 L16 10 L22 22" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M10.2 18 H19.8" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="24" cy="11" r="2.5" fill="white" opacity="0.55"/>
+          </svg>
+          <span class="footer-logo-wordmark">GrammarBot</span>
+        </div>
+        <p class="footer-tagline">
+          Precise language correction for Discord communities. Small tool, meaningful impact.
+        </p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Product</p>
+          <ul>
+            <li><a href="#">Invite Bot</a></li>
+            <li><a href="#">Commands</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Support</p>
+          <ul>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Discord Server</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Legal</p>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2024 GrammarBot. All rights reserved.</p>
+      <a href="#" class="footer-invite">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite to Discord
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Header scroll ───────────────────────────────────────
+  var header = document.getElementById('header');
+  window.addEventListener('scroll', function() {
+    if (header) header.classList.toggle('scrolled', window.scrollY > 10);
+  }, { passive: true });
+
+  // ── Desktop dropdown ────────────────────────────────────
+  var navDropdown = document.getElementById('navDropdown');
+  var dropdownBtn = document.getElementById('dropdownBtn');
+  if (navDropdown && dropdownBtn) {
+    dropdownBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var open = navDropdown.classList.toggle('open');
+      dropdownBtn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', function() {
+      navDropdown.classList.remove('open');
+      dropdownBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  // ── Hamburger / Mobile drawer ───────────────────────────
+  var hamburger    = document.getElementById('hamburger');
+  var mobileDrawer = document.getElementById('mobileDrawer');
+  var isOpen       = false;
+
+  function openDrawer() {
+    isOpen = true;
+    hamburger.classList.add('is-open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    mobileDrawer.classList.add('is-open');
+    mobileDrawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    isOpen = false;
+    hamburger.classList.remove('is-open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    mobileDrawer.classList.remove('is-open');
+    mobileDrawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  if (hamburger && mobileDrawer) {
+    hamburger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      isOpen ? closeDrawer() : openDrawer();
+    });
+
+    mobileDrawer.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', closeDrawer);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (isOpen && !mobileDrawer.contains(e.target) && !hamburger.contains(e.target)) {
+        closeDrawer();
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && isOpen) closeDrawer();
+    });
+  }
+
+  // ── Mobile Resources sub-menu ───────────────────────────
+  var drawerResBtn = document.getElementById('drawerResBtn');
+  var drawerResSub = document.getElementById('drawerResSub');
+  if (drawerResBtn && drawerResSub) {
+    drawerResBtn.addEventListener('click', function() {
+      var subOpen = drawerResSub.classList.toggle('open');
+      drawerResBtn.classList.toggle('sub-open', subOpen);
+      drawerResBtn.setAttribute('aria-expanded', String(subOpen));
+    });
+  }
+
+  // ── Reveal animations ───────────────────────────────────
+  document.body.classList.add('js-ready');
+  var revealEls = document.querySelectorAll('.reveal');
+
+  function checkReveals() {
+    revealEls.forEach(function(el) {
+      var r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight - 30) el.classList.add('visible');
+    });
+  }
+
+  if ('IntersectionObserver' in window) {
+    var ro = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.05 });
+    revealEls.forEach(function(el) { ro.observe(el); });
+  }
+
+  setTimeout(checkReveals, 60);
+  window.addEventListener('scroll', checkReveals, { passive: true });
+
+  // ── Count-up ────────────────────────────────────────────
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+  function countUp(el, target, duration) {
+    var start = performance.now();
+    (function tick(now) {
+      var p = Math.min((now - start) / duration, 1);
+      var v = Math.round(easeOut(p) * target);
+      el.textContent = v >= 1000 ? v.toLocaleString('en-US') : String(v);
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  var statsEl   = document.getElementById('stats');
+  var srvEl     = document.getElementById('stat-servers');
+  var corrEl    = document.getElementById('stat-corrections');
+  var statsDone = false;
+
+  if (statsEl) {
+    new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting && !statsDone) {
+        statsDone = true;
+        if (srvEl)  countUp(srvEl,  4812,    1800);
+        if (corrEl) countUp(corrEl, 2140000, 2200);
+      }
+    }, { threshold: 0.3 }).observe(statsEl);
+  }
+</script>
+</body>
+</html>
