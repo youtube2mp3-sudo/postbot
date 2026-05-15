@@ -10,10 +10,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
   
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Discord preview mobile */
+    @media (max-width: 480px) {
+      .dc-sidebar { display: none; }
+      .dc-window { font-size: 10.5px; }
+      .dc-app { min-height: 260px; }
+      .dc-msg { padding-left: 46px; padding-right: 8px; }
+      .dc-msg-avatar { left: 8px; }
+      .dc-ch-item { font-size: 0.8rem; }
+      .dc-server-name { font-size: 0.8rem; }
+      .dc-chat-topic { display: none; }
+    }
+    @media (max-width: 360px) {
+      .dc-rail { width: 36px; }
+      .dc-rail-icon { width: 26px; height: 26px; font-size: 8px; }
+      .dc-msg { padding-left: 40px; }
+      .dc-msg-avatar { width: 26px; height: 26px; left: 7px; }
+      .dc-msg-text { font-size: 0.875rem; }
+      .dc-uname { font-size: 0.875rem; }
+      .dc-app { min-height: 240px; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="page-transition-overlay" style="position:fixed;inset:0;background:var(--bg);z-index:9999;opacity:1;pointer-events:all;transition:opacity 0.32s ease;"></div>
+<div id="page-transition-overlay" style="position:fixed;inset:0;background:var(--bg);z-index:9999;opacity:1;pointer-events:none;transition:opacity 0.32s ease;"></div>
 
 <header id="header" role="banner">
   <nav class="nav-inner" role="navigation" aria-label="Primary">
