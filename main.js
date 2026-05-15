@@ -54,11 +54,15 @@ if (hamburger && mobileDrawer) {
     e.stopPropagation();
     isOpen ? closeDrawer() : openDrawer();
   });
-  mobileDrawer.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', closeDrawer); });
+  mobileDrawer.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', closeDrawer);
+  });
   document.addEventListener('click', function(e) {
     if (isOpen && !mobileDrawer.contains(e.target) && !hamburger.contains(e.target)) closeDrawer();
   });
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && isOpen) closeDrawer(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isOpen) closeDrawer();
+  });
 }
 
 // ── Mobile Resources sub-menu ─────────────────────────────
@@ -117,14 +121,14 @@ if (statsEl) {
   }, { threshold: 0.3 }).observe(statsEl);
 }
 
-// ── Status metrics (real browser-measured values only) ────
+// ── Status metrics ────────────────────────────────────────
 function loadStatus() {
-  var latEl    = document.getElementById('s-latency');
-  var latUnit  = document.getElementById('s-latency-unit');
-  var memEl    = document.getElementById('s-memory');
-  var memUnit  = document.getElementById('s-memory-unit');
-  var netEl    = document.getElementById('s-network');
-  var netUnit  = document.getElementById('s-network-unit');
+  var latEl   = document.getElementById('s-latency');
+  var latUnit = document.getElementById('s-latency-unit');
+  var memEl   = document.getElementById('s-memory');
+  var memUnit = document.getElementById('s-memory-unit');
+  var netEl   = document.getElementById('s-network');
+  var netUnit = document.getElementById('s-network-unit');
 
   var t0 = performance.now();
   fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
@@ -134,3 +138,92 @@ function loadStatus() {
       if (latUnit) latUnit.textContent = 'ms round-trip';
     })
     .catch(function() {
+      if (latEl) latEl.classList.add('na');
+      if (latUnit) latUnit.textContent = 'unavailable';
+    });
+
+  try {
+    var mem = performance.memory;
+    if (mem && memEl) {
+      memEl.textContent = (mem.usedJSHeapSize / 1048576).toFixed(1);
+      memEl.classList.remove('na');
+      if (memUnit) memUnit.textContent = 'MB JS heap';
+    }
+  } catch (e) {}
+
+  try {
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && netEl) {
+      if (conn.downlink) {
+        netEl.textContent = conn.downlink.toFixed(1);
+        netEl.classList.remove('na');
+        if (netUnit) netUnit.textContent = 'Mbps downlink';
+      } else if (conn.effectiveType) {
+        netEl.textContent = conn.effectiveType;
+        netEl.classList.remove('na');
+        if (netUnit) netUnit.textContent = 'connection';
+      }
+    }
+  } catch (e) {}
+}
+var statusSection = document.getElementById('status');
+if (statusSection) {
+  new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) loadStatus();
+  }, { threshold: 0.1 }).observe(statusSection);
+}
+
+// ── Cookie banner ─────────────────────────────────────────
+(function() {
+  var banner  = document.getElementById('cookieBanner');
+  var accept  = document.getElementById('cookieAccept');
+  var decline = document.getElementById('cookieDecline');
+  if (!banner) return;
+  try { if (localStorage.getItem('cookie-consent')) return; } catch(e) {}
+  setTimeout(function() { banner.classList.add('cb-visible'); }, 1400);
+  function dismiss(val) {
+    try { localStorage.setItem('cookie-consent', val); } catch(e) {}
+    banner.classList.add('cb-hiding');
+    banner.classList.remove('cb-visible');
+    setTimeout(function() { banner.style.display = 'none'; }, 500);
+  }
+  if (accept)  accept.addEventListener('click',  function() { dismiss('accepted'); });
+  if (decline) decline.addEventListener('click', function() { dismiss('declined'); });
+})();
+
+// ── Discord live preview animation ────────────────────────
+(function() {
+  var typing  = document.getElementById('dc-typing');
+  var botText = document.getElementById('dc-bot-text');
+  if (!typing || !botText) return;
+
+  var messages = [
+    'Corrections for <strong>Alex</strong>: \u201cbelieve\u201d (not beleive), \u201cawesome\u201d (not awsome), \u201cdefinitely\u201d (not definately)',
+    'No errors found for <strong>Jordan</strong>. Well done.',
+    'Corrections for <strong>Alex</strong>: \u201cbelieve\u201d (not beleive), \u201cawesome\u201d (not awsome), \u201cdefinitely\u201d (not definately)'
+  ];
+  var idx = 0;
+
+  function showTyping() {
+    botText.innerHTML = '';
+    botText.style.display = 'none';
+    typing.style.display  = 'flex';
+  }
+
+  function showMessage() {
+    typing.style.display  = 'none';
+    botText.innerHTML     = messages[idx % messages.length];
+    botText.style.display = 'block';
+    idx++;
+  }
+
+  function cycle() {
+    showTyping();
+    setTimeout(function() {
+      showMessage();
+      setTimeout(cycle, 5000);
+    }, 2200);
+  }
+
+  setTimeout(cycle, 1200);
+})();
