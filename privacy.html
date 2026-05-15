@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy &amp; Terms of Service — Grammerly</title>
+  <meta name="description" content="Privacy Policy and Terms of Service for Grammerly, the Discord spell-check bot." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── LEGAL LAYOUT ─────────────────────────────────────── */
+    .legal-root {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 28px 96px;
+    }
+
+    .legal-hero {
+      padding: 48px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+    .legal-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-color);
+      background: var(--accent-light);
+      border-radius: 99px;
+      margin-bottom: 18px;
+      font-family: var(--font-nav);
+    }
+    .legal-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    .legal-hero-sub {
+      font-size: 0.9375rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .legal-updated {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 18px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-nav);
+    }
+    .legal-updated::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #059669;
+    }
+
+    /* ── TOC ──────────────────────────────────────────────── */
+    .legal-toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      margin-bottom: 56px;
+      box-shadow: var(--shadow-sm);
+    }
+    .legal-toc-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      font-family: var(--font-nav);
+    }
+    .legal-toc-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+    .legal-toc-list a {
+      display: block;
+      padding: 6px 8px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: color 0.15s, background 0.15s;
+    }
+    .legal-toc-list a:hover {
+      color: var(--accent-color);
+      background: var(--accent-light);
+    }
+    @media (max-width: 500px) {
+      .legal-toc-list { grid-template-columns: 1fr; }
+    }
+
+    /* ── SECTIONS ─────────────────────────────────────────── */
+    .legal-tab-bar {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+      position: sticky;
+      top: calc(14px + var(--nav-h) + 16px);
+      background: var(--bg);
+      z-index: 10;
+      padding-bottom: 0;
+    }
+    .legal-tab {
+      padding: 12px 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      border: 1px solid transparent;
+      border-bottom: none;
+      cursor: pointer;
+      font-family: var(--font-nav);
+      background: none;
+      transition: color 0.2s, background 0.2s;
+      margin-bottom: -1px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .legal-tab:hover { color: var(--text-primary); background: var(--surface-2); }
+    .legal-tab.active {
+      color: var(--accent-color);
+      border-color: var(--border);
+      background: var(--bg);
+      font-weight: 600;
+    }
+
+    .legal-doc { display: none; }
+    .legal-doc.active { display: block; }
+
+    .legal-section {
+      margin-bottom: 48px;
+      scroll-margin-top: calc(14px + var(--nav-h) + 80px);
+    }
+    .legal-section-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .legal-section-number {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-family: var(--font-nav);
+      letter-spacing: 0.06em;
+      margin-right: 8px;
+    }
+
+    .legal-p {
+      font-size: 0.9375rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+    .legal-p:last-child { margin-bottom: 0; }
+    .legal-p strong { color: var(--text-primary); font-weight: 600; }
+    .legal-p a { color: var(--accent-color); text-decoration: underline; text-underline-offset: 2px; }
+
+    .legal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .legal-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 0.9375rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .legal-list li::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      flex-shrink: 0;
+      margin-top: 9px;
+    }
+    .legal-list li strong { color: var(--text-primary); font-weight: 600; }
+
+    .legal-callout {
+      display: flex;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      border: 1px solid;
+      background: var(--accent-light);
+      border-color: rgba(37,99,235,0.18);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+    .legal-callout strong { color: var(--text-primary); font-weight: 600; }
+
+    .legal-contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-sm);
+      margin-top: 16px;
+    }
+    .legal-contact-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .legal-contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+    .legal-contact-item a { color: var(--accent-color); text-decoration: underline; text-underline-offset: 2px; }
+  </style>
+</head>
+<body>
+
+<div id="page-transition-overlay" style="position:fixed;inset:0;background:var(--bg);z-index:9999;opacity:1;pointer-events:all;transition:opacity 0.32s ease;"></div>
+
+<header id="header" role="banner">
+  <nav class="nav-inner" role="navigation" aria-label="Primary">
+    <div class="nav-left">
+      <a href="index.html" class="nav-logo" aria-label="Grammerly home">
+        <img src="logo.PNG" alt="GrammarBot" class="nav-logo-img" />
+        <span class="nav-logo-wordmark">G r a m m e r l y</span>
+      </a>
+    </div>
+    <div class="nav-center">
+      <ul class="nav-links" role="list">
+        <li><a href="index.html#stats">Statistics</a></li>
+        <li><a href="index.html#trust">About</a></li>
+        <li><a href="index.html#status">Status</a></li>
+        <li>
+          <div class="nav-dropdown" id="navDropdown">
+            <button class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" id="dropdownBtn">
+              Resources
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="nav-dropdown-menu" id="dropdownMenu" role="menu">
+              <a href="docs.html" role="menuitem">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="opacity:0.7;">
+                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="#2563EB" stroke-width="1.4"/>
+                  <path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="#2563EB" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                Documentation
+              </a>
+              <a href="#" role="menuitem">
+                <svg width="16" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true" style="opacity:0.7;">
+                  <path d="M15.25 1.5C14.09.94 12.85.54 11.55.31a.09.09 0 0 0-.1.05c-.17.3-.36.69-.49.99a12.1 12.1 0 0 0-3.92 0 10.1 10.1 0 0 0-.5-1 .09.09 0 0 0-.1-.04C5.15.54 3.91.94 2.75 1.5a.09.09 0 0 0-.04.03C.4 5.06-.24 8.49.07 11.87c0 .02.01.04.03.05a13.08 13.08 0 0 0 3.95 2 .09.09 0 0 0 .1-.03c.3-.42.57-.86.8-1.33.01-.03 0-.07-.03-.08a8.58 8.58 0 0 1-1.23-.59.09.09 0 0 1-.01-.15c.08-.06.16-.13.24-.19a.09.09 0 0 1 .09-.01c2.58 1.18 5.37 1.18 7.92 0a.09.09 0 0 1 .1.01c.07.07.15.13.24.2a.09.09 0 0 1-.01.14c-.39.23-.8.43-1.23.59-.03.01-.05.05-.03.08.24.47.51.91.8 1.33a.09.09 0 0 0 .1.03 13.04 13.04 0 0 0 3.96-2 .09.09 0 0 0 .03-.05c.36-3.87-.61-7.27-2.69-10.34a.07.07 0 0 0-.04-.03zM6.01 9.75c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.69 1.75-1.55 1.75zm5.99 0c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.68 1.75-1.55 1.75z" fill="#5865F2"/>
+                </svg>
+                Support Server
+              </a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="nav-cta" aria-label="Invite Grammerly to your server">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite Bot
+      </a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div class="mobile-drawer" id="mobileDrawer" aria-hidden="true" role="dialog" aria-label="Navigation menu">
+  <ul class="mobile-drawer-links" role="list">
+    <li><a href="index.html#stats">Statistics</a></li>
+    <li><a href="index.html#trust">About</a></li>
+    <li><a href="index.html#status">Status</a></li>
+    <li>
+      <button class="mobile-drawer-resource-btn" id="drawerResBtn" aria-expanded="false">
+        Resources
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <ul class="mobile-drawer-sub" id="drawerResSub" role="list">
+        <li><a href="docs.html">Documentation</a></li>
+        <li><a href="#">Support Server</a></li>
+      </ul>
+    </li>
+  </ul>
+  <a href="#" class="mobile-drawer-cta">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path d="M7.5 2 L7.5 13 M2 7.5 L13 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    Invite Bot
+  </a>
+</div>
+
+<main style="padding-top: 32px;">
+<div class="legal-root">
+
+  <div class="legal-hero reveal">
+    <div class="legal-hero-label">Legal</div>
+    <h1 class="legal-hero-title">Privacy &amp; Terms</h1>
+    <p class="legal-hero-sub">How Grammerly handles your data, and what you agree to when you use the bot.</p>
+    <div class="legal-updated">Last updated: May 15, 2026</div>
+  </div>
+
+  <!-- ── TAB BAR ───────────────────────────────────────── -->
+  <div class="legal-tab-bar" role="tablist" aria-label="Legal documents">
+    <a href="#privacy" class="legal-tab active" role="tab" id="tab-privacy" aria-selected="true">Privacy Policy</a>
+    <a href="#terms" class="legal-tab" role="tab" id="tab-terms" aria-selected="false">Terms of Service</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       PRIVACY POLICY
+  ════════════════════════════════════════════════════════ -->
+  <div class="legal-doc active" id="doc-privacy" role="tabpanel" aria-labelledby="tab-privacy">
+
+    <div class="legal-callout reveal">
+      <span>&#8505;</span>
+      <div><strong>Short version:</strong> Grammerly only stores your Discord user ID and the number of times you've been corrected. It does not read, store, or share the content of your messages.</div>
+    </div>
+
+    <!-- 1 -->
+    <div class="legal-section reveal" id="pp-data-we-collect">
+      <h2 class="legal-section-title"><span class="legal-section-number">1.</span>Information We Collect</h2>
+      <p class="legal-p">Grammerly collects only the minimum data necessary to operate. Specifically, we collect and store:</p>
+      <ul class="legal-list">
+        <li><strong>Discord User ID</strong> — A numeric identifier assigned by Discord to your account. We store this to track how many times each user has been corrected.</li>
+        <li><strong>Correction Count</strong> — The total number of times the bot has corrected a given user in the monitored channel. This is a plain integer counter stored per User ID.</li>
+      </ul>
+      <p class="legal-p">We do <strong>not</strong> collect or store any of the following:</p>
+      <ul class="legal-list">
+        <li>The content of any message you send</li>
+        <li>Your username, display name, avatar, or any other profile information</li>
+        <li>Your email address or any contact information</li>
+        <li>IP addresses, device identifiers, or browser data</li>
+        <li>Any data from channels other than the designated monitoring channel</li>
+      </ul>
+    </div>
+
+    <!-- 2 -->
+    <div class="legal-section reveal" id="pp-how-we-use">
+      <h2 class="legal-section-title"><span class="legal-section-number">2.</span>How We Use Your Information</h2>
+      <p class="legal-p">The data we collect is used solely to power the bot's core features:</p>
+      <ul class="legal-list">
+        <li>To respond to <code>/corrections &lt;user&gt;</code> slash commands with accurate correction counts</li>
+        <li>To maintain a persistent record across bot restarts so counts are not lost</li>
+      </ul>
+      <p class="legal-p">We do not use your data for advertising, analytics, profiling, or any purpose beyond operating the bot.</p>
+    </div>
+
+    <!-- 3 -->
+    <div class="legal-section reveal" id="pp-storage">
+      <h2 class="legal-section-title"><span class="legal-section-number">3.</span>Data Storage &amp; Security</h2>
+      <p class="legal-p">Correction data is stored in a local SQLite database file (<code>data/corrections.db</code>) on the server where Grammerly is hosted. The data is not transmitted to any third party, cloud database, or external analytics service.</p>
+      <p class="legal-p">Access to this data is limited to the server operator. We recommend following standard server security practices, including keeping the bot token private and restricting access to the host machine.</p>
+      <p class="legal-p">While we take reasonable precautions, no system is completely secure. We cannot guarantee the absolute security of data stored on self-hosted infrastructure.</p>
+    </div>
+
+    <!-- 4 -->
+    <div class="legal-section reveal" id="pp-sharing">
+      <h2 class="legal-section-title"><span class="legal-section-number">4.</span>Data Sharing &amp; Third Parties</h2>
+      <p class="legal-p">We do not sell, rent, trade, or otherwise transfer your data to third parties. The only external service that Grammerly interacts with is <strong>Discord's API</strong>, which is necessary for the bot to function. Grammerly's use of the Discord API is governed by <a href="https://discord.com/terms" target="_blank" rel="noopener noreferrer">Discord's Terms of Service</a> and <a href="https://discord.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+      <p class="legal-p">The spell-checking library (<code>pyspellchecker</code>) operates entirely locally. No message content is sent to any external API during spell-check processing.</p>
+    </div>
+
+    <!-- 5 -->
+    <div class="legal-section reveal" id="pp-retention">
+      <h2 class="legal-section-title"><span class="legal-section-number">5.</span>Data Retention</h2>
+      <p class="legal-p">Correction counts associated with a Discord User ID are retained indefinitely as long as the bot remains deployed and the database file is preserved. There is no automatic expiry of this data.</p>
+      <p class="legal-p">If you wish to have your correction count removed, you may contact the server administrator and request deletion from the database. Server administrators can delete individual records by removing the corresponding row from <code>data/corrections.db</code>.</p>
+    </div>
+
+    <!-- 6 -->
+    <div class="legal-section reveal" id="pp-rights">
+      <h2 class="legal-section-title"><span class="legal-section-number">6.</span>Your Rights</h2>
+      <p class="legal-p">Depending on your jurisdiction, you may have rights including:</p>
+      <ul class="legal-list">
+        <li><strong>Access</strong> — You may request to know what data is stored about your User ID.</li>
+        <li><strong>Deletion</strong> — You may request that your correction count data be deleted.</li>
+        <li><strong>Correction</strong> — If your data is inaccurate, you may request correction.</li>
+      </ul>
+      <p class="legal-p">To exercise any of these rights, contact the operator of the server where Grammerly is deployed. Since Grammerly is self-hosted software, the data controller is the individual or organization running the bot, not the bot's developer.</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="legal-section reveal" id="pp-children">
+      <h2 class="legal-section-title"><span class="legal-section-number">7.</span>Children's Privacy</h2>
+      <p class="legal-p">Grammerly is not directed at children under the age of 13 (or 16 in certain jurisdictions). Discord itself requires users to be at least 13 years old. We do not knowingly collect data from anyone below the minimum age required to use Discord. If you believe a minor's data has been collected, please contact the server administrator to have it removed.</p>
+    </div>
+
+    <!-- 8 -->
+    <div class="legal-section reveal" id="pp-changes">
+      <h2 class="legal-section-title"><span class="legal-section-number">8.</span>Changes to This Policy</h2>
+      <p class="legal-p">We may update this Privacy Policy from time to time. The "Last updated" date at the top of this page reflects when the most recent changes were made. Continued use of Grammerly after changes are posted constitutes your acceptance of the updated policy.</p>
+    </div>
+
+    <!-- 9 -->
+    <div class="legal-section reveal" id="pp-contact">
+      <h2 class="legal-section-title"><span class="legal-section-number">9.</span>Contact</h2>
+      <p class="legal-p">For any privacy-related questions or requests, please reach out through our Discord support server or submit a request to the server administrator.</p>
+      <div class="legal-contact-card">
+        <div class="legal-contact-title">Get in touch</div>
+        <div class="legal-contact-item">
+          <svg width="16" height="14" viewBox="0 0 18 14" fill="none">
+            <path d="M15.25 1.5C14.09.94 12.85.54 11.55.31a.09.09 0 0 0-.1.05c-.17.3-.36.69-.49.99a12.1 12.1 0 0 0-3.92 0 10.1 10.1 0 0 0-.5-1 .09.09 0 0 0-.1-.04C5.15.54 3.91.94 2.75 1.5a.09.09 0 0 0-.04.03C.4 5.06-.24 8.49.07 11.87c0 .02.01.04.03.05a13.08 13.08 0 0 0 3.95 2 .09.09 0 0 0 .1-.03c.3-.42.57-.86.8-1.33.01-.03 0-.07-.03-.08a8.58 8.58 0 0 1-1.23-.59.09.09 0 0 1-.01-.15c.08-.06.16-.13.24-.19a.09.09 0 0 1 .09-.01c2.58 1.18 5.37 1.18 7.92 0a.09.09 0 0 1 .1.01c.07.07.15.13.24.2a.09.09 0 0 1-.01.14c-.39.23-.8.43-1.23.59-.03.01-.05.05-.03.08.24.47.51.91.8 1.33a.09.09 0 0 0 .1.03 13.04 13.04 0 0 0 3.96-2 .09.09 0 0 0 .03-.05c.36-3.87-.61-7.27-2.69-10.34a.07.07 0 0 0-.04-.03zM6.01 9.75c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.69 1.75-1.55 1.75zm5.99 0c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.68 1.75-1.55 1.75z" fill="#5865F2"/>
+          </svg>
+          Join our <a href="#">Discord Support Server</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       TERMS OF SERVICE
+  ════════════════════════════════════════════════════════ -->
+  <div class="legal-doc" id="doc-terms" role="tabpanel" aria-labelledby="tab-terms">
+
+    <div class="legal-callout reveal">
+      <span>&#8505;</span>
+      <div><strong>Short version:</strong> Use Grammerly responsibly, within Discord's rules, and without trying to abuse or misuse the bot. The bot is provided as-is without warranty.</div>
+    </div>
+
+    <!-- 1 -->
+    <div class="legal-section reveal" id="tos-acceptance">
+      <h2 class="legal-section-title"><span class="legal-section-number">1.</span>Acceptance of Terms</h2>
+      <p class="legal-p">By inviting, adding, or using Grammerly ("the Bot") in any Discord server, you ("the User" or "Server Administrator") agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not use the Bot.</p>
+      <p class="legal-p">These Terms apply to all users of the Bot, including server administrators who invite and configure it, and all members of servers where the Bot is active.</p>
+    </div>
+
+    <!-- 2 -->
+    <div class="legal-section reveal" id="tos-description">
+      <h2 class="legal-section-title"><span class="legal-section-number">2.</span>Description of Service</h2>
+      <p class="legal-p">Grammerly is a Discord bot that automatically detects and replies to spelling mistakes in a designated channel. Its features include:</p>
+      <ul class="legal-list">
+        <li>Automatic spell-checking of messages in a single monitored channel</li>
+        <li>Tracking and display of per-user correction counts</li>
+        <li>A customizable word and phrase whitelist</li>
+        <li>Configurable response visibility (private or public)</li>
+        <li>Slash commands for bot information and configuration</li>
+      </ul>
+    </div>
+
+    <!-- 3 -->
+    <div class="legal-section reveal" id="tos-eligibility">
+      <h2 class="legal-section-title"><span class="legal-section-number">3.</span>Eligibility</h2>
+      <p class="legal-p">You must meet the minimum age requirement to use Discord (13 years old in most jurisdictions, 16 in some) to use Grammerly. By using the Bot, you represent that you meet this requirement.</p>
+      <p class="legal-p">You must also comply with <a href="https://discord.com/terms" target="_blank" rel="noopener noreferrer">Discord's Terms of Service</a> and all applicable community guidelines. Grammerly may not be used on servers that violate Discord's policies.</p>
+    </div>
+
+    <!-- 4 -->
+    <div class="legal-section reveal" id="tos-acceptable-use">
+      <h2 class="legal-section-title"><span class="legal-section-number">4.</span>Acceptable Use</h2>
+      <p class="legal-p">You agree to use Grammerly only for its intended purposes and in a manner consistent with all applicable laws, regulations, and Discord's policies. You must <strong>not</strong>:</p>
+      <ul class="legal-list">
+        <li>Attempt to abuse, exploit, reverse-engineer, or interfere with the Bot's functionality</li>
+        <li>Use the Bot to harass, bully, or target specific individuals in a harmful way</li>
+        <li>Attempt to extract, scrape, or misuse data generated by the Bot</li>
+        <li>Use the Bot in violation of Discord's Terms of Service or Community Guidelines</li>
+        <li>Attempt to crash, overload, or spam the Bot with commands or messages</li>
+        <li>Modify, redistribute, or commercially exploit the Bot's code without explicit permission from the original author</li>
+      </ul>
+    </div>
+
+    <!-- 5 -->
+    <div class="legal-section reveal" id="tos-server-admin">
+      <h2 class="legal-section-title"><span class="legal-section-number">5.</span>Server Administrator Responsibilities</h2>
+      <p class="legal-p">If you are a server administrator who has invited Grammerly, you are responsible for:</p>
+      <ul class="legal-list">
+        <li>Ensuring all members of your server are aware that the Bot is active and may interact with their messages in the designated channel</li>
+        <li>Configuring the Bot appropriately (channel ID, response mode, whitelist) for your community's needs</li>
+        <li>Ensuring your server's use of Grammerly complies with these Terms and Discord's policies</li>
+        <li>Handling any data access or deletion requests from your server members relating to correction count data</li>
+      </ul>
+    </div>
+
+    <!-- 6 -->
+    <div class="legal-section reveal" id="tos-disclaimer">
+      <h2 class="legal-section-title"><span class="legal-section-number">6.</span>Disclaimer of Warranties</h2>
+      <p class="legal-p">Grammerly is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranty of any kind, express or implied. We do not warrant that:</p>
+      <ul class="legal-list">
+        <li>The Bot will be available at all times or free from errors</li>
+        <li>Spell-check results will be accurate, complete, or appropriate for all contexts</li>
+        <li>The Bot will meet your specific requirements or expectations</li>
+        <li>Any defects or errors will be corrected</li>
+      </ul>
+      <p class="legal-p">The spell-checking functionality relies on a statistical dictionary and may produce false positives (flagging correct words) or false negatives (missing errors). The whitelist feature exists to address false positives.</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="legal-section reveal" id="tos-liability">
+      <h2 class="legal-section-title"><span class="legal-section-number">7.</span>Limitation of Liability</h2>
+      <p class="legal-p">To the fullest extent permitted by applicable law, Grammerly and its developer shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the Bot.</p>
+      <p class="legal-p">This includes, but is not limited to, damages for loss of data, community disruption, reputational harm, or any other intangible losses — regardless of whether we have been advised of the possibility of such damages.</p>
+      <p class="legal-p">In jurisdictions that do not allow the exclusion or limitation of certain damages, our liability shall be limited to the greatest extent permitted by law.</p>
+    </div>
+
+    <!-- 8 -->
+    <div class="legal-section reveal" id="tos-termination">
+      <h2 class="legal-section-title"><span class="legal-section-number">8.</span>Termination</h2>
+      <p class="legal-p">These Terms remain in effect for as long as you use Grammerly. You may stop using the Bot at any time by removing it from your Discord server.</p>
+      <p class="legal-p">We reserve the right to refuse service to any user or server at our discretion, particularly in cases of misuse, abuse, or violation of these Terms or Discord's policies.</p>
+    </div>
+
+    <!-- 9 -->
+    <div class="legal-section reveal" id="tos-ip">
+      <h2 class="legal-section-title"><span class="legal-section-number">9.</span>Intellectual Property</h2>
+      <p class="legal-p">All code, design, and documentation associated with Grammerly are the intellectual property of the Bot's developer and are licensed under the MIT License unless otherwise stated. The MIT License permits use, copying, modification, and distribution provided the original copyright notice and license text are preserved.</p>
+      <p class="legal-p">Grammerly is not affiliated with, endorsed by, or connected to Grammarly Inc. or any other company of a similar name. The name "Grammerly" is used for this Discord bot and does not imply any relationship with any existing trademark holder.</p>
+    </div>
+
+    <!-- 10 -->
+    <div class="legal-section reveal" id="tos-changes">
+      <h2 class="legal-section-title"><span class="legal-section-number">10.</span>Changes to These Terms</h2>
+      <p class="legal-p">We reserve the right to update or modify these Terms at any time. Changes will be reflected by an updated date at the top of this page. Continued use of Grammerly after changes are posted constitutes your acceptance of the revised Terms.</p>
+      <p class="legal-p">We encourage server administrators to review these Terms periodically for any updates.</p>
+    </div>
+
+    <!-- 11 -->
+    <div class="legal-section reveal" id="tos-governing">
+      <h2 class="legal-section-title"><span class="legal-section-number">11.</span>Governing Law</h2>
+      <p class="legal-p">These Terms shall be governed by and construed in accordance with applicable law. Any disputes arising from these Terms or your use of Grammerly shall be resolved in the appropriate courts of competent jurisdiction.</p>
+    </div>
+
+    <!-- 12 -->
+    <div class="legal-section reveal" id="tos-contact">
+      <h2 class="legal-section-title"><span class="legal-section-number">12.</span>Contact</h2>
+      <p class="legal-p">If you have any questions about these Terms, please reach out through our Discord support server.</p>
+      <div class="legal-contact-card">
+        <div class="legal-contact-title">Get in touch</div>
+        <div class="legal-contact-item">
+          <svg width="16" height="14" viewBox="0 0 18 14" fill="none">
+            <path d="M15.25 1.5C14.09.94 12.85.54 11.55.31a.09.09 0 0 0-.1.05c-.17.3-.36.69-.49.99a12.1 12.1 0 0 0-3.92 0 10.1 10.1 0 0 0-.5-1 .09.09 0 0 0-.1-.04C5.15.54 3.91.94 2.75 1.5a.09.09 0 0 0-.04.03C.4 5.06-.24 8.49.07 11.87c0 .02.01.04.03.05a13.08 13.08 0 0 0 3.95 2 .09.09 0 0 0 .1-.03c.3-.42.57-.86.8-1.33.01-.03 0-.07-.03-.08a8.58 8.58 0 0 1-1.23-.59.09.09 0 0 1-.01-.15c.08-.06.16-.13.24-.19a.09.09 0 0 1 .09-.01c2.58 1.18 5.37 1.18 7.92 0a.09.09 0 0 1 .1.01c.07.07.15.13.24.2a.09.09 0 0 1-.01.14c-.39.23-.8.43-1.23.59-.03.01-.05.05-.03.08.24.47.51.91.8 1.33a.09.09 0 0 0 .1.03 13.04 13.04 0 0 0 3.96-2 .09.09 0 0 0 .03-.05c.36-3.87-.61-7.27-2.69-10.34a.07.07 0 0 0-.04-.03zM6.01 9.75c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.69 1.75-1.55 1.75zm5.99 0c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.68 1.75-1.55 1.75z" fill="#5865F2"/>
+          </svg>
+          Join our <a href="#">Discord Support Server</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</main>
+
+<footer id="footer" role="contentinfo">
+  <div class="wave-top-footer">
+    <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <rect width="1440" height="100" fill="#F9F9F8"/>
+      <path d="M0,50 C200,100 400,0 600,50 C800,100 1000,0 1200,42 C1320,62 1400,16 1440,50 L1440,100 L0,100 Z" fill="#0E0E0D"/>
+    </svg>
+  </div>
+  <div class="container footer-content">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="logo.PNG" alt="Grammerly" class="footer-logo-img" />
+          <span class="footer-logo-wordmark">G r a m m e r l y</span>
+        </div>
+        <p class="footer-tagline">
+          The grammar vigilante your server never asked for, but absolutely needs.
+        </p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Product</p>
+          <ul>
+            <li><a href="#">Invite Bot</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Support</p>
+          <ul>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="#">Discord Server</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Legal</p>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="privacy.html#terms">Terms of Service</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 Grammerly. All rights reserved.</p>
+      <a href="#" class="footer-invite">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite to Discord
+      </a>
+    </div>
+  </div>
+</footer>
+
+<div id="cookieBanner" role="dialog" aria-label="Cookie consent" aria-modal="true">
+  <p class="cookie-text"><strong>We use cookies.</strong> This site uses cookies to measure performance and improve your experience.</p>
+  <div class="cookie-actions">
+    <button class="cookie-btn-decline" id="cookieDecline">Decline</button>
+    <button class="cookie-btn-accept" id="cookieAccept">Accept</button>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script src="transitions.js"></script>
+<script>
+(function () {
+  var tabPrivacy = document.getElementById('tab-privacy');
+  var tabTerms   = document.getElementById('tab-terms');
+  var docPrivacy = document.getElementById('doc-privacy');
+  var docTerms   = document.getElementById('doc-terms');
+
+  function showTab(which) {
+    if (which === 'terms') {
+      tabPrivacy.classList.remove('active');
+      tabTerms.classList.add('active');
+      docPrivacy.classList.remove('active');
+      docTerms.classList.add('active');
+      tabPrivacy.setAttribute('aria-selected', 'false');
+      tabTerms.setAttribute('aria-selected', 'true');
+    } else {
+      tabTerms.classList.remove('active');
+      tabPrivacy.classList.add('active');
+      docTerms.classList.remove('active');
+      docPrivacy.classList.add('active');
+      tabTerms.setAttribute('aria-selected', 'false');
+      tabPrivacy.setAttribute('aria-selected', 'true');
+    }
+  }
+
+  tabPrivacy.addEventListener('click', function (e) {
+    e.preventDefault();
+    showTab('privacy');
+    history.replaceState(null, '', '#privacy');
+  });
+  tabTerms.addEventListener('click', function (e) {
+    e.preventDefault();
+    showTab('terms');
+    history.replaceState(null, '', '#terms');
+  });
+
+  if (window.location.hash === '#terms') showTab('terms');
+})();
+</script>
+
+</body>
+</html>
