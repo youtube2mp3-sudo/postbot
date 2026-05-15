@@ -96,6 +96,24 @@ window.addEventListener('scroll', function() {
   });
 }, { passive: true });
 
+// ── Bot stats: fetch once, drive both counters and status panel ───────
+var botStats = null;
+var statsReady = false;
+function fetchBotStats(cb) {
+  fetch('/stats.json?_=' + Date.now(), { cache: 'no-store' })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      botStats = data;
+      statsReady = true;
+      if (cb) cb(data);
+    })
+    .catch(function() {
+      statsReady = true;
+      if (cb) cb(null);
+    });
+}
+fetchBotStats(null);
+
 // ── Count-up ──────────────────────────────────────────────
 function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 function countUp(el, target, duration) {
@@ -111,60 +129,73 @@ var statsEl = document.getElementById('stats');
 var srvEl   = document.getElementById('stat-servers');
 var corrEl  = document.getElementById('stat-corrections');
 var statsDone = false;
+function runCountUp() {
+  if (statsDone) return;
+  statsDone = true;
+  var srv  = (botStats && botStats.servers  != null) ? botStats.servers  : 0;
+  var corr = (botStats && botStats.corrections != null) ? botStats.corrections : 0;
+  if (srvEl)  countUp(srvEl,  srv,  1800);
+  if (corrEl) countUp(corrEl, corr, 2200);
+}
 if (statsEl) {
   new IntersectionObserver(function(entries) {
     if (entries[0].isIntersecting && !statsDone) {
-      statsDone = true;
-      if (srvEl)  countUp(srvEl,  0,    1800);
-      if (corrEl) countUp(corrEl, 0, 2200);
+      if (statsReady) {
+        runCountUp();
+      } else {
+        fetchBotStats(function() { runCountUp(); });
+      }
     }
   }, { threshold: 0.3 }).observe(statsEl);
 }
 
 // ── Status metrics ────────────────────────────────────────
-function loadStatus() {
+function applyBotStatus(data) {
   var latEl   = document.getElementById('s-latency');
   var latUnit = document.getElementById('s-latency-unit');
   var memEl   = document.getElementById('s-memory');
   var memUnit = document.getElementById('s-memory-unit');
   var netEl   = document.getElementById('s-network');
   var netUnit = document.getElementById('s-network-unit');
-
-  var t0 = performance.now();
-  fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
-    .then(function() {
-      var rtt = Math.round(performance.now() - t0);
-      if (latEl) { latEl.textContent = rtt; latEl.classList.remove('na'); }
-      if (latUnit) latUnit.textContent = 'ms round-trip';
-    })
-    .catch(function() {
-      if (latEl) latEl.classList.add('na');
-      if (latUnit) latUnit.textContent = 'unavailable';
-    });
-
-  try {
-    var mem = performance.memory;
-    if (mem && memEl) {
-      memEl.textContent = (mem.usedJSHeapSize / 1048576).toFixed(1);
-      memEl.classList.remove('na');
-      if (memUnit) memUnit.textContent = 'MB JS heap';
+  var uptEl   = document.getElementById('s-uptime');
+  var uptUnit = document.getElementById('s-uptime-unit');
+  if (!data) {
+    if (latEl) { latEl.textContent = 'N/A'; latEl.classList.add('na'); }
+    if (memEl) { memEl.textContent = 'N/A'; memEl.classList.add('na'); }
+    if (netEl) { netEl.textContent = 'offline'; netEl.classList.add('na'); }
+    return;
+  }
+  if (latEl && data.latency_ms != null) {
+    latEl.textContent = data.latency_ms;
+    latEl.classList.remove('na');
+    if (latUnit) latUnit.textContent = 'ms WebSocket';
+  }
+  if (memEl && data.memory_mb != null) {
+    memEl.textContent = data.memory_mb;
+    memEl.classList.remove('na');
+    if (memUnit) memUnit.textContent = 'MB resident';
+  }
+  if (netEl) {
+    var online = data.status === 'online';
+    netEl.textContent = online ? 'online' : 'offline';
+    netEl.classList.toggle('na', !online);
+    if (netUnit && data.updated_at) {
+      var ts = data.updated_at.replace('T', ' ').replace('Z', ' UTC');
+      netUnit.textContent = 'updated ' + ts;
     }
-  } catch (e) {}
-
-  try {
-    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conn && netEl) {
-      if (conn.downlink) {
-        netEl.textContent = conn.downlink.toFixed(1);
-        netEl.classList.remove('na');
-        if (netUnit) netUnit.textContent = 'Mbps downlink';
-      } else if (conn.effectiveType) {
-        netEl.textContent = conn.effectiveType;
-        netEl.classList.remove('na');
-        if (netUnit) netUnit.textContent = 'connection';
-      }
-    }
-  } catch (e) {}
+  }
+  if (uptEl && data.uptime) {
+    uptEl.textContent = data.uptime;
+    uptEl.classList.remove('na');
+    if (uptUnit) uptUnit.textContent = '';
+  }
+}
+function loadStatus() {
+  if (statsReady) {
+    applyBotStatus(botStats);
+  } else {
+    fetchBotStats(function(data) { applyBotStatus(data); });
+  }
 }
 var statusSection = document.getElementById('status');
 if (statusSection) {
@@ -210,19 +241,19 @@ if (statusSection) {
       u1: { name: 'Alex',   ts: 'Today at 3:42 PM', text: 'hey can you beleive how awsome this update is?? i definately love it' },
       u2: { name: 'Jordan', ts: 'Today at 3:43 PM', text: 'ikr its so good lol' },
       botTs: 'Today at 3:43 PM',
-      bot: 'Corrections for <strong>Alex</strong>: \u201cbelieve\u201d (not beleive), \u201cawesome\u201d (not awsome), \u201cdefinitely\u201d (not definately)'
+      bot: 'Corrections for <strong>Alex</strong>: “believe” (not beleive), “awesome” (not awsome), “definitely” (not definately)'
     },
     {
       u1: { name: 'Tyler', ts: 'Today at 5:17 PM', text: 'i would of went there but the wether was to bad tbh' },
       u2: { name: 'Sam',   ts: 'Today at 5:18 PM', text: 'that sucks, shouldve just stayed home' },
       botTs: 'Today at 5:18 PM',
-      bot: 'Corrections for <strong>Tyler</strong>: \u201cwould have\u201d (not would of), \u201cgone\u201d (not went), \u201cweather\u201d (not wether), \u201ctoo\u201d (not to)'
+      bot: 'Corrections for <strong>Tyler</strong>: “would have” (not would of), “gone” (not went), “weather” (not wether), “too” (not to)'
     },
     {
       u1: { name: 'Maya', ts: 'Today at 8:02 PM', text: 'there going to there house, its so wierd how their always late' },
       u2: { name: 'Jake', ts: 'Today at 8:03 PM', text: 'lmao classic them honestly' },
       botTs: 'Today at 8:03 PM',
-      bot: 'Corrections for <strong>Maya</strong>: \u201cthey\u2019re\u201d (not there), \u201ctheir\u201d (not there), \u201cweird\u201d (not wierd), \u201cthey\u2019re\u201d (not their)'
+      bot: 'Corrections for <strong>Maya</strong>: “they’re” (not there), “their” (not there), “weird” (not wierd), “they’re” (not their)'
     }
   ];
 
