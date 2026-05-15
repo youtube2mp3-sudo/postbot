@@ -195,35 +195,102 @@ if (statusSection) {
 (function() {
   var typing  = document.getElementById('dc-typing');
   var botText = document.getElementById('dc-bot-text');
+  var u1Name  = document.getElementById('dc-u1-name');
+  var u1Text  = document.getElementById('dc-u1-text');
+  var u1Ts    = document.getElementById('dc-u1-ts');
+  var u2Name  = document.getElementById('dc-u2-name');
+  var u2Text  = document.getElementById('dc-u2-text');
+  var u2Ts    = document.getElementById('dc-u2-ts');
+  var botTs   = document.getElementById('dc-bot-ts');
+
   if (!typing || !botText) return;
 
-  var messages = [
-    'Corrections for <strong>Alex</strong>: \u201cbelieve\u201d (not beleive), \u201cawesome\u201d (not awsome), \u201cdefinitely\u201d (not definately)',
-    'No errors found for <strong>Jordan</strong>. Well done.',
-    'Corrections for <strong>Alex</strong>: \u201cbelieve\u201d (not beleive), \u201cawesome\u201d (not awsome), \u201cdefinitely\u201d (not definately)'
+  var scenarios = [
+    {
+      u1: { name: 'Alex',   ts: 'Today at 3:42 PM', text: 'hey can you beleive how awsome this update is?? i definately love it' },
+      u2: { name: 'Jordan', ts: 'Today at 3:43 PM', text: 'ikr its so good lol' },
+      botTs: 'Today at 3:43 PM',
+      bot: 'Corrections for <strong>Alex</strong>: \u201cbelieve\u201d (not beleive), \u201cawesome\u201d (not awsome), \u201cdefinitely\u201d (not definately)'
+    },
+    {
+      u1: { name: 'Tyler', ts: 'Today at 5:17 PM', text: 'i would of went there but the wether was to bad tbh' },
+      u2: { name: 'Sam',   ts: 'Today at 5:18 PM', text: 'that sucks, shouldve just stayed home' },
+      botTs: 'Today at 5:18 PM',
+      bot: 'Corrections for <strong>Tyler</strong>: \u201cwould have\u201d (not would of), \u201cgone\u201d (not went), \u201cweather\u201d (not wether), \u201ctoo\u201d (not to)'
+    },
+    {
+      u1: { name: 'Maya', ts: 'Today at 8:02 PM', text: 'there going to there house, its so wierd how their always late' },
+      u2: { name: 'Jake', ts: 'Today at 8:03 PM', text: 'lmao classic them honestly' },
+      botTs: 'Today at 8:03 PM',
+      bot: 'Corrections for <strong>Maya</strong>: \u201cthey\u2019re\u201d (not there), \u201ctheir\u201d (not there), \u201cweird\u201d (not wierd), \u201cthey\u2019re\u201d (not their)'
+    }
   ];
-  var idx = 0;
 
-  function showTyping() {
-    botText.innerHTML = '';
-    botText.style.display = 'none';
-    typing.style.display  = 'flex';
+  var scIdx = 0;
+  var msg1El = document.querySelector('#dc-msgs .dc-msg:nth-child(1)');
+  var msg2El = document.querySelector('#dc-msgs .dc-msg:nth-child(2)');
+  var msg3El = document.querySelector('#dc-msgs .dc-msg:nth-child(3)');
+
+  function animateIn(el, delay) {
+    el.classList.remove('dc-msg-hidden', 'dc-msg-anim');
+    setTimeout(function() {
+      el.classList.add('dc-msg-anim');
+    }, delay || 0);
   }
 
-  function showMessage() {
+  function hideAll() {
+    [msg1El, msg2El, msg3El].forEach(function(el) {
+      if (el) { el.classList.add('dc-msg-hidden'); el.classList.remove('dc-msg-anim'); }
+    });
+    botText.innerHTML = '';
+    botText.style.display = 'none';
     typing.style.display  = 'none';
-    botText.innerHTML     = messages[idx % messages.length];
-    botText.style.display = 'block';
-    idx++;
   }
 
   function cycle() {
-    showTyping();
+    var sc = scenarios[scIdx % scenarios.length];
+    scIdx++;
+
+    hideAll();
+
+    // Update content for this scenario
+    if (u1Name) u1Name.textContent = sc.u1.name;
+    if (u1Text) u1Text.textContent = sc.u1.text;
+    if (u1Ts)   u1Ts.textContent   = sc.u1.ts;
+    if (u2Name) u2Name.textContent = sc.u2.name;
+    if (u2Text) u2Text.textContent = sc.u2.text;
+    if (u2Ts)   u2Ts.textContent   = sc.u2.ts;
+    if (botTs)  botTs.textContent  = sc.botTs;
+
+    // Animate user 1 message in
     setTimeout(function() {
-      showMessage();
-      setTimeout(cycle, 5000);
-    }, 2200);
+      animateIn(msg1El, 0);
+    }, 300);
+
+    // Animate user 2 message in
+    setTimeout(function() {
+      animateIn(msg2El, 0);
+    }, 1400);
+
+    // Show bot typing indicator
+    setTimeout(function() {
+      if (msg3El) { msg3El.classList.remove('dc-msg-hidden'); msg3El.classList.remove('dc-msg-anim'); }
+      typing.style.display = 'flex';
+      botText.style.display = 'none';
+      botText.innerHTML = '';
+    }, 2400);
+
+    // Show bot correction
+    setTimeout(function() {
+      typing.style.display = 'none';
+      botText.innerHTML = sc.bot;
+      botText.style.display = 'block';
+      animateIn(msg3El, 0);
+    }, 4600);
+
+    // Loop
+    setTimeout(cycle, 9000);
   }
 
-  setTimeout(cycle, 1200);
+  setTimeout(cycle, 800);
 })();
