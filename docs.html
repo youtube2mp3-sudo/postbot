@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation — Grammerly</title>
+  <meta name="description" content="Full documentation for Grammerly — the Discord spell-check bot. Commands, configuration, setup, and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── DOCS LAYOUT ─────────────────────────────────────────── */
+    .docs-root {
+      display: flex;
+      align-items: flex-start;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 28px;
+      gap: 48px;
+      min-height: 80vh;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────────────────── */
+    .docs-sidebar {
+      position: sticky;
+      top: calc(14px + var(--nav-h) + 32px);
+      width: 220px;
+      flex-shrink: 0;
+      padding: 0 0 64px;
+    }
+    .docs-sidebar-section { margin-bottom: 28px; }
+    .docs-sidebar-heading {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      padding: 0 10px;
+      font-family: var(--font-nav);
+    }
+    .docs-sidebar-links { list-style: none; display: flex; flex-direction: column; gap: 1px; }
+    .docs-sidebar-links a {
+      display: block;
+      padding: 7px 10px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: color 0.15s, background 0.15s;
+      font-family: var(--font-body);
+      border-left: 2px solid transparent;
+    }
+    .docs-sidebar-links a:hover {
+      color: var(--text-primary);
+      background: var(--surface-2);
+    }
+    .docs-sidebar-links a.active {
+      color: var(--accent-color);
+      background: var(--accent-light);
+      border-left-color: var(--accent-color);
+      font-weight: 500;
+    }
+
+    /* ── DOCS CONTENT ────────────────────────────────────────── */
+    .docs-content {
+      flex: 1;
+      min-width: 0;
+      padding: 0 0 96px;
+    }
+    .docs-section {
+      margin-bottom: 64px;
+      padding-top: 20px;
+    }
+    .docs-section:first-child { padding-top: 0; }
+
+    .docs-hero {
+      margin-bottom: 64px;
+      padding: 48px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .docs-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-color);
+      background: var(--accent-light);
+      border-radius: 99px;
+      margin-bottom: 18px;
+      font-family: var(--font-nav);
+    }
+    .docs-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    .docs-hero-sub {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    .docs-section-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      scroll-margin-top: calc(14px + var(--nav-h) + 40px);
+    }
+    .docs-section-title span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      font-family: var(--font-nav);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-color);
+      background: var(--accent-light);
+      padding: 3px 8px;
+      border-radius: 99px;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    .docs-p {
+      font-size: 0.9375rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .docs-p:last-child { margin-bottom: 0; }
+
+    .docs-p strong { color: var(--text-primary); font-weight: 600; }
+    .docs-p code,
+    .docs-inline-code {
+      font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.83em;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--accent-color);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── COMMAND CARDS ──────────────────────────────────────── */
+    .cmd-list { display: flex; flex-direction: column; gap: 12px; }
+    .cmd-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .cmd-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(37,99,235,0.18);
+    }
+    .cmd-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .cmd-name {
+      font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      background: var(--accent-light);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .cmd-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 99px;
+      font-family: var(--font-nav);
+    }
+    .cmd-badge.perm-admin {
+      color: #d97706;
+      background: rgba(217,119,6,0.10);
+    }
+    .cmd-badge.perm-manage-msg {
+      color: #7c3aed;
+      background: rgba(124,58,237,0.10);
+    }
+    .cmd-badge.perm-anyone {
+      color: #059669;
+      background: rgba(5,150,105,0.10);
+    }
+    .cmd-desc {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+    .cmd-desc strong { color: var(--text-primary); font-weight: 600; }
+    .cmd-param-row {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .cmd-param-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding-top: 3px;
+      flex-shrink: 0;
+      font-family: var(--font-nav);
+    }
+    .cmd-param-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cmd-param-tag {
+      font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.8rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .cmd-example {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .cmd-example-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-family: var(--font-nav);
+    }
+    .cmd-example-block {
+      background: #1E1F22;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.82rem;
+      color: #DBDEE1;
+      line-height: 1.6;
+    }
+    .cmd-example-block .slash { color: #5865F2; }
+    .cmd-example-block .reply { color: #57F287; }
+
+    /* ── CONFIG TABLE ───────────────────────────────────────── */
+    .docs-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .docs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      background: var(--surface);
+    }
+    .docs-table thead tr {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+    .docs-table th {
+      text-align: left;
+      padding: 12px 18px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-family: var(--font-nav);
+    }
+    .docs-table td {
+      padding: 14px 18px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .docs-table tr:last-child td { border-bottom: none; }
+    .docs-table td code {
+      font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.82em;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--accent-color);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .docs-table td strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ── CALLOUT BOXES ──────────────────────────────────────── */
+    .docs-callout {
+      display: flex;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      border: 1px solid;
+    }
+    .docs-callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .docs-callout-body { font-size: 0.9rem; line-height: 1.6; font-weight: 300; }
+    .docs-callout-body strong { font-weight: 600; }
+    .docs-callout.info {
+      background: var(--accent-light);
+      border-color: rgba(37,99,235,0.18);
+      color: var(--text-secondary);
+    }
+    .docs-callout.tip {
+      background: rgba(5,150,105,0.07);
+      border-color: rgba(5,150,105,0.18);
+      color: var(--text-secondary);
+    }
+    .docs-callout.warn {
+      background: rgba(217,119,6,0.07);
+      border-color: rgba(217,119,6,0.18);
+      color: var(--text-secondary);
+    }
+
+    /* ── STEP LIST ──────────────────────────────────────────── */
+    .docs-steps { list-style: none; display: flex; flex-direction: column; gap: 20px; counter-reset: step-counter; }
+    .docs-steps li {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      counter-increment: step-counter;
+    }
+    .docs-steps li::before {
+      content: counter(step-counter);
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      background: var(--accent-color);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: var(--font-display);
+      margin-top: 1px;
+    }
+    .docs-steps li .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .docs-steps li .step-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      font-family: var(--font-display);
+    }
+    .docs-steps li .step-desc {
+      font-size: 0.875rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .docs-steps li .step-desc code {
+      font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.82em;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--accent-color);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* ── PERMISSIONS GRID ───────────────────────────────────── */
+    .perm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .perm-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .perm-card-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .perm-card-desc {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .perm-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #059669;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* ── DOCS MAIN RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 820px) {
+      .docs-root { flex-direction: column; gap: 0; }
+      .docs-sidebar {
+        position: static;
+        width: 100%;
+        padding: 0 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .docs-sidebar-links { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+      .docs-sidebar-links a { border-left: none; border-bottom: 2px solid transparent; }
+      .docs-sidebar-links a.active { border-bottom-color: var(--accent-color); }
+      .docs-hero { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="page-transition-overlay" style="position:fixed;inset:0;background:var(--bg);z-index:9999;opacity:1;pointer-events:all;transition:opacity 0.32s ease;"></div>
+
+<header id="header" role="banner">
+  <nav class="nav-inner" role="navigation" aria-label="Primary">
+    <div class="nav-left">
+      <a href="index.html" class="nav-logo" aria-label="Grammerly home">
+        <img src="logo.PNG" alt="GrammarBot" class="nav-logo-img" />
+        <span class="nav-logo-wordmark">G r a m m e r l y</span>
+      </a>
+    </div>
+    <div class="nav-center">
+      <ul class="nav-links" role="list">
+        <li><a href="index.html#stats">Statistics</a></li>
+        <li><a href="index.html#trust">About</a></li>
+        <li><a href="index.html#status">Status</a></li>
+        <li>
+          <div class="nav-dropdown" id="navDropdown">
+            <button class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" id="dropdownBtn">
+              Resources
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="nav-dropdown-menu" id="dropdownMenu" role="menu">
+              <a href="docs.html" role="menuitem">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="opacity:0.7;">
+                  <rect x="2" y="2" width="12" height="12" rx="2" stroke="#2563EB" stroke-width="1.4"/>
+                  <path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="#2563EB" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                Documentation
+              </a>
+              <a href="#" role="menuitem">
+                <svg width="16" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true" style="opacity:0.7;">
+                  <path d="M15.25 1.5C14.09.94 12.85.54 11.55.31a.09.09 0 0 0-.1.05c-.17.3-.36.69-.49.99a12.1 12.1 0 0 0-3.92 0 10.1 10.1 0 0 0-.5-1 .09.09 0 0 0-.1-.04C5.15.54 3.91.94 2.75 1.5a.09.09 0 0 0-.04.03C.4 5.06-.24 8.49.07 11.87c0 .02.01.04.03.05a13.08 13.08 0 0 0 3.95 2 .09.09 0 0 0 .1-.03c.3-.42.57-.86.8-1.33.01-.03 0-.07-.03-.08a8.58 8.58 0 0 1-1.23-.59.09.09 0 0 1-.01-.15c.08-.06.16-.13.24-.19a.09.09 0 0 1 .09-.01c2.58 1.18 5.37 1.18 7.92 0a.09.09 0 0 1 .1.01c.07.07.15.13.24.2a.09.09 0 0 1-.01.14c-.39.23-.8.43-1.23.59-.03.01-.05.05-.03.08.24.47.51.91.8 1.33a.09.09 0 0 0 .1.03 13.04 13.04 0 0 0 3.96-2 .09.09 0 0 0 .03-.05c.36-3.87-.61-7.27-2.69-10.34a.07.07 0 0 0-.04-.03zM6.01 9.75c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.69 1.75-1.55 1.75zm5.99 0c-.85 0-1.55-.79-1.55-1.75s.68-1.75 1.55-1.75c.87 0 1.56.79 1.55 1.75 0 .96-.68 1.75-1.55 1.75z" fill="#5865F2"/>
+                </svg>
+                Support Server
+              </a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="nav-cta" aria-label="Invite Grammerly to your server">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite Bot
+      </a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div class="mobile-drawer" id="mobileDrawer" aria-hidden="true" role="dialog" aria-label="Navigation menu">
+  <ul class="mobile-drawer-links" role="list">
+    <li><a href="index.html#stats">Statistics</a></li>
+    <li><a href="index.html#trust">About</a></li>
+    <li><a href="index.html#status">Status</a></li>
+    <li>
+      <button class="mobile-drawer-resource-btn" id="drawerResBtn" aria-expanded="false">
+        Resources
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 4.5L6 7.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <ul class="mobile-drawer-sub" id="drawerResSub" role="list">
+        <li><a href="docs.html">Documentation</a></li>
+        <li><a href="#">Support Server</a></li>
+      </ul>
+    </li>
+  </ul>
+  <a href="#" class="mobile-drawer-cta">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path d="M7.5 2 L7.5 13 M2 7.5 L13 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    Invite Bot
+  </a>
+</div>
+
+<main style="padding-top: 32px;">
+
+  <div class="docs-root">
+
+    <!-- ── SIDEBAR ───────────────────────────────────────── -->
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <div class="docs-sidebar-section">
+        <p class="docs-sidebar-heading">Getting Started</p>
+        <ul class="docs-sidebar-links">
+          <li><a href="#overview" class="active">Overview</a></li>
+          <li><a href="#quick-start">Quick Start</a></li>
+          <li><a href="#permissions">Required Permissions</a></li>
+        </ul>
+      </div>
+      <div class="docs-sidebar-section">
+        <p class="docs-sidebar-heading">Commands</p>
+        <ul class="docs-sidebar-links">
+          <li><a href="#cmd-latency">/latency</a></li>
+          <li><a href="#cmd-uptime">/uptime</a></li>
+          <li><a href="#cmd-corrections">/corrections</a></li>
+          <li><a href="#cmd-whitelist-word">/whitelist-word</a></li>
+          <li><a href="#cmd-whitelist-list">/whitelist-list</a></li>
+          <li><a href="#cmd-configure-responses">/configure-responses</a></li>
+          <li><a href="#cmd-help">/help</a></li>
+        </ul>
+      </div>
+      <div class="docs-sidebar-section">
+        <p class="docs-sidebar-heading">Configuration</p>
+        <ul class="docs-sidebar-links">
+          <li><a href="#config-env">Environment Variables</a></li>
+          <li><a href="#config-tuning">Spell-Check Tuning</a></li>
+          <li><a href="#config-responses">Response Modes</a></li>
+        </ul>
+      </div>
+      <div class="docs-sidebar-section">
+        <p class="docs-sidebar-heading">Advanced</p>
+        <ul class="docs-sidebar-links">
+          <li><a href="#whitelist">Whitelist System</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ── CONTENT ───────────────────────────────────────── -->
+    <div class="docs-content">
+
+      <div class="docs-hero reveal">
+        <div class="docs-hero-label">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M3 4h6M3 6.5h6M3 9h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Documentation
+        </div>
+        <h1 class="docs-hero-title">Grammerly Bot Docs</h1>
+        <p class="docs-hero-sub">Everything you need to invite, configure, and get the most out of Grammerly — the Discord bot that corrects spelling so you don't have to.</p>
+      </div>
+
+      <!-- ── OVERVIEW ─────────────────────────────────────── -->
+      <section class="docs-section reveal" id="overview">
+        <h2 class="docs-section-title">Overview</h2>
+        <p class="docs-p">
+          <strong>Grammerly</strong> is a lightweight Discord bot that monitors a designated channel and automatically replies when it detects spelling mistakes. It uses a statistical spell-checker to catch common errors and posts corrections back into the chat — one correction per line, prefixed with an asterisk.
+        </p>
+        <p class="docs-p">
+          The bot tracks how many times each user has been corrected, supports a customizable word whitelist, and gives server admins full control over whether bot responses are visible only to the user or to the whole channel.
+        </p>
+        <div class="docs-callout info">
+          <div class="docs-callout-icon">&#8505;</div>
+          <div class="docs-callout-body">Grammerly only monitors <strong>one designated channel</strong> per deployment. It does not respond to edited messages, and it always ignores other bots.</div>
+        </div>
+      </section>
+
+      <!-- ── QUICK START ──────────────────────────────────── -->
+      <section class="docs-section reveal" id="quick-start">
+        <h2 class="docs-section-title">Quick Start</h2>
+        <ol class="docs-steps">
+          <li>
+            <div class="step-body">
+              <div class="step-title">Invite Grammerly to your server</div>
+              <div class="step-desc">Click the <strong>Invite Bot</strong> button in the navigation and authorize Grammerly with the required permissions for your server.</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">Designate a channel to monitor</div>
+              <div class="step-desc">Grammerly watches a single channel configured via the <code>TARGET_CHANNEL_ID</code> environment variable. Set this to the channel ID of the channel you want corrected. Right-click any channel in Discord and choose <strong>Copy Channel ID</strong> (you may need Developer Mode enabled in Discord settings).</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">Configure response visibility (optional)</div>
+              <div class="step-desc">By default, correction responses are visible to everyone. Use <code>/configure-responses private</code> to make bot responses only visible to the user who was corrected.</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">Add words to the whitelist (optional)</div>
+              <div class="step-desc">If Grammerly is flagging slang, names, or server-specific vocabulary, use <code>/whitelist-word</code> to add them to the ignore list. Comma-separate multiple words: <code>/whitelist-word gng, bruh, copium</code>.</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">You're done</div>
+              <div class="step-desc">Grammerly is now actively monitoring and will reply to any message containing spelling errors in the designated channel.</div>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ── PERMISSIONS ──────────────────────────────────── -->
+      <section class="docs-section reveal" id="permissions">
+        <h2 class="docs-section-title">Required Permissions</h2>
+        <p class="docs-p">Grammerly requires the following Discord permissions to function correctly. Make sure all four are granted when you authorize the bot.</p>
+        <div class="perm-grid">
+          <div class="perm-card">
+            <div class="perm-card-title"><span class="perm-dot"></span>Read Messages</div>
+            <div class="perm-card-desc">Allows the bot to see messages in the designated channel.</div>
+          </div>
+          <div class="perm-card">
+            <div class="perm-card-title"><span class="perm-dot"></span>Send Messages</div>
+            <div class="perm-card-desc">Allows the bot to post correction replies.</div>
+          </div>
+          <div class="perm-card">
+            <div class="perm-card-title"><span class="perm-dot"></span>Read Message History</div>
+            <div class="perm-card-desc">Required for the bot to function in the channel context.</div>
+          </div>
+          <div class="perm-card">
+            <div class="perm-card-title"><span class="perm-dot"></span>Use Application Commands</div>
+            <div class="perm-card-desc">Allows slash commands to appear and respond in your server.</div>
+          </div>
+        </div>
+        <div class="docs-callout warn" style="margin-top: 20px;">
+          <div class="docs-callout-icon">&#9888;</div>
+          <div class="docs-callout-body"><strong>Message Content Intent</strong> must be enabled. Go to the Discord Developer Portal → your bot → Bot settings, and toggle on <strong>Message Content Intent</strong> under Privileged Gateway Intents.</div>
+        </div>
+      </section>
+
+      <!-- ── COMMANDS ─────────────────────────────────────── -->
+      <section class="docs-section reveal" id="cmd-latency">
+        <h2 class="docs-section-title">Commands <span>Slash Commands</span></h2>
+
+        <div class="docs-callout tip" style="margin-bottom: 24px;">
+          <div class="docs-callout-icon">&#10003;</div>
+          <div class="docs-callout-body">All commands are Discord slash commands. Type <strong>/</strong> in any channel to see the available commands listed by Discord's autocomplete.</div>
+        </div>
+
+        <div class="cmd-list">
+
+          <!-- /latency -->
+          <div class="cmd-card" id="cmd-latency-card">
+            <div class="cmd-header">
+              <span class="cmd-name">/latency</span>
+              <span class="cmd-badge perm-anyone">Anyone</span>
+            </div>
+            <p class="cmd-desc">Shows the bot's current latency in milliseconds — the round-trip time between the bot and Discord's API. Useful for checking if the bot is responsive.</p>
+            <div class="cmd-example">
+              <div class="cmd-example-label">Example Response</div>
+              <div class="cmd-example-block">
+                <span class="reply">Grammerly replied:</span> Latency: 42ms
+              </div>
+            </div>
+          </div>
+
+          <!-- /uptime -->
+          <div class="cmd-card" id="cmd-uptime">
+            <div class="cmd-header">
+              <span class="cmd-name">/uptime</span>
+              <span class="cmd-badge perm-anyone">Anyone</span>
+            </div>
+            <p class="cmd-desc">Shows how long Grammerly has been online since its last startup. Useful for verifying the bot is running continuously.</p>
+            <div class="cmd-example">
+              <div class="cmd-example-label">Example Response</div>
+              <div class="cmd-example-block">
+                <span class="reply">Grammerly replied:</span> Uptime: 3 days, 4 hours, 12 minutes
+              </div>
+            </div>
+          </div>
+
+          <!-- /corrections -->
+          <div class="cmd-card" id="cmd-corrections">
+            <div class="cmd-header">
+              <span class="cmd-name">/corrections</span>
+              <span class="cmd-badge perm-anyone">Anyone</span>
+            </div>
+            <p class="cmd-desc">Shows how many times a specific user has been corrected by Grammerly. Correction counts are tracked persistently in a local SQLite database and survive restarts.</p>
+            <div class="cmd-param-row">
+              <span class="cmd-param-label">Parameters</span>
+              <div class="cmd-param-tags">
+                <span class="cmd-param-tag">&lt;user&gt; — required</span>
+              </div>
+            </div>
+            <div class="cmd-example">
+              <div class="cmd-example-label">Example</div>
+              <div class="cmd-example-block">
+                <span class="slash">/corrections</span> user:@Alex<br>
+                <span class="reply">Grammerly replied:</span> Alex has been corrected 17 times.
+              </div>
+            </div>
+          </div>
+
+          <!-- /whitelist-word -->
+          <div class="cmd-card" id="cmd-whitelist-word">
+            <div class="cmd-header">
+              <span class="cmd-name">/whitelist-word</span>
+              <span class="cmd-badge perm-manage-msg">Manage Messages</span>
+            </div>
+            <p class="cmd-desc">Adds one or more words or phrases to the permanent ignore list. Whitelisted words are never flagged as misspellings, even if the spell-checker would normally correct them. Accepts comma-separated input for batch additions.</p>
+            <div class="cmd-param-row">
+              <span class="cmd-param-label">Parameters</span>
+              <div class="cmd-param-tags">
+                <span class="cmd-param-tag">&lt;word_or_phrase&gt; — required</span>
+              </div>
+            </div>
+            <div class="docs-callout info" style="margin: 14px 0 0; border-radius: 8px;">
+              <div class="docs-callout-icon">&#8505;</div>
+              <div class="docs-callout-body">Requires the <strong>Manage Messages</strong> permission or Administrator. This command always responds privately (ephemeral), regardless of your server's response mode setting.</div>
+            </div>
+            <div class="cmd-example">
+              <div class="cmd-example-label">Examples</div>
+              <div class="cmd-example-block">
+                <span class="slash">/whitelist-word</span> word_or_phrase:copium<br>
+                <span class="slash">/whitelist-word</span> word_or_phrase:gng, bruh, omg, fr<br>
+                <span class="slash">/whitelist-word</span> word_or_phrase:ServerName
+              </div>
+            </div>
+          </div>
+
+          <!-- /whitelist-list -->
+          <div class="cmd-card" id="cmd-whitelist-list">
+            <div class="cmd-header">
+              <span class="cmd-name">/whitelist-list</span>
+              <span class="cmd-badge perm-anyone">Anyone</span>
+            </div>
+            <p class="cmd-desc">Displays all words and phrases currently on the whitelist. If there are more than 25 entries, the response includes <strong>Previous</strong> and <strong>Next</strong> pagination buttons so you can browse the full list. The paginator automatically times out after 120 seconds of inactivity.</p>
+            <div class="cmd-example">
+              <div class="cmd-example-label">Example Response</div>
+              <div class="cmd-example-block">
+                <span class="reply">Grammerly replied:</span><br>
+                <strong style="color:#DBDEE1;">Whitelisted Words:</strong><br>
+                - bruh<br>
+                - copium<br>
+                - gng<br>
+                - fr
+              </div>
+            </div>
+          </div>
+
+          <!-- /configure-responses -->
+          <div class="cmd-card" id="cmd-configure-responses">
+            <div class="cmd-header">
+              <span class="cmd-name">/configure-responses</span>
+              <span class="cmd-badge perm-admin">Manage Server</span>
+            </div>
+            <p class="cmd-desc">Sets whether Grammerly's correction messages are visible to everyone in the channel (<strong>public</strong>) or only to the person who was corrected (<strong>private</strong>). This setting is applied per-server and persists across restarts.</p>
+            <div class="cmd-param-row">
+              <span class="cmd-param-label">Parameters</span>
+              <div class="cmd-param-tags">
+                <span class="cmd-param-tag">&lt;mode&gt; — private | public</span>
+              </div>
+            </div>
+            <div class="docs-callout info" style="margin: 14px 0 0; border-radius: 8px;">
+              <div class="docs-callout-icon">&#8505;</div>
+              <div class="docs-callout-body">Requires the <strong>Manage Server</strong> permission or Administrator. This command always responds privately regardless of the setting you're changing.</div>
+            </div>
+            <div class="cmd-example">
+              <div class="cmd-example-label">Examples</div>
+              <div class="cmd-example-block">
+                <span class="slash">/configure-responses</span> mode:private<br>
+                <span class="slash">/configure-responses</span> mode:public
+              </div>
+            </div>
+          </div>
+
+          <!-- /help -->
+          <div class="cmd-card" id="cmd-help">
+            <div class="cmd-header">
+              <span class="cmd-name">/help</span>
+              <span class="cmd-badge perm-anyone">Anyone</span>
+            </div>
+            <p class="cmd-desc">Displays a summary of all available commands directly in Discord. Handy for a quick reference without leaving the app.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── CONFIG ENV ────────────────────────────────────── -->
+      <section class="docs-section reveal" id="config-env">
+        <h2 class="docs-section-title">Environment Variables</h2>
+        <p class="docs-p">Grammerly is configured via environment variables set in a <code>.env</code> file in the bot's root directory. Copy <code>.env.example</code> to <code>.env</code> and fill in the values below.</p>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Required</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>DISCORD_TOKEN</code></td>
+                <td><strong>Yes</strong></td>
+                <td>—</td>
+                <td>Your bot token from the Discord Developer Portal. Never share this.</td>
+              </tr>
+              <tr>
+                <td><code>TARGET_CHANNEL_ID</code></td>
+                <td>No</td>
+                <td><code>1503321842751115314</code></td>
+                <td>The ID of the channel Grammerly should monitor for spelling mistakes. Right-click a channel in Discord → Copy Channel ID.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="docs-callout warn" style="margin-top: 20px;">
+          <div class="docs-callout-icon">&#9888;</div>
+          <div class="docs-callout-body"><strong>Never commit your <code>.env</code> file</strong> to version control. The <code>.gitignore</code> already excludes it, but double-check before pushing.</div>
+        </div>
+      </section>
+
+      <!-- ── CONFIG TUNING ─────────────────────────────────── -->
+      <section class="docs-section reveal" id="config-tuning">
+        <h2 class="docs-section-title">Spell-Check Tuning</h2>
+        <p class="docs-p">Advanced spell-check settings can be adjusted in <code>config/settings.py</code>. These control how aggressively Grammerly flags misspellings.</p>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Setting</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>SPELL_DISTANCE</code></td>
+                <td><code>1</code></td>
+                <td>The edit distance passed to the spell-checker. A value of <code>1</code> means words with one insertion, deletion, or substitution from a known word are flagged. Increasing this catches more errors but may produce more false positives.</td>
+              </tr>
+              <tr>
+                <td><code>MIN_WORD_LENGTH</code></td>
+                <td><code>3</code></td>
+                <td>Words shorter than this character count are ignored entirely. This prevents the bot from flagging common abbreviations like "ok", "lol", "gg". Increase if you want to catch shorter misspellings.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── CONFIG RESPONSES ──────────────────────────────── -->
+      <section class="docs-section reveal" id="config-responses">
+        <h2 class="docs-section-title">Response Modes</h2>
+        <p class="docs-p">Grammerly supports two response visibility modes, configurable per server using <code>/configure-responses</code>:</p>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>Who Sees It</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>public</code> <em style="color:var(--text-muted);font-size:0.8em;">(default)</em></td>
+                <td>Everyone in the channel</td>
+                <td>Servers that want corrections to be a visible, shared experience. Creates public accountability.</td>
+              </tr>
+              <tr>
+                <td><code>private</code></td>
+                <td>Only the corrected user</td>
+                <td>Servers that want corrections to feel helpful rather than embarrassing. The correction is between the bot and the user only.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── WHITELIST ─────────────────────────────────────── -->
+      <section class="docs-section reveal" id="whitelist">
+        <h2 class="docs-section-title">Whitelist System</h2>
+        <p class="docs-p">The whitelist allows you to permanently exclude specific words or phrases from being flagged. This is especially useful for:</p>
+        <ul style="margin: 0 0 20px 20px; display: flex; flex-direction: column; gap: 8px;">
+          <li class="docs-p" style="margin: 0;">Server-specific slang, nicknames, or terminology</li>
+          <li class="docs-p" style="margin: 0;">Proper nouns that the spell-checker doesn't recognize</li>
+          <li class="docs-p" style="margin: 0;">Internet slang and abbreviations (e.g. <code>gng</code>, <code>bruh</code>, <code>copium</code>)</li>
+          <li class="docs-p" style="margin: 0;">Game names, brand names, or community-specific vocabulary</li>
+        </ul>
+        <p class="docs-p">Whitelist entries are stored in <code>data/ignore_words.txt</code> and persist across restarts. When a phrase is whitelisted, <em>all individual words in that phrase</em> are also excluded when that phrase appears in a message.</p>
+        <div class="docs-callout tip">
+          <div class="docs-callout-icon">&#10003;</div>
+          <div class="docs-callout-body"><strong>Batch add words</strong> in a single command by separating them with commas: <code>/whitelist-word gng, bruh, omg, fr, lmao</code>. The bot will confirm how many were added and how many already existed.</div>
+        </div>
+      </section>
+
+      <!-- ── HOW IT WORKS ──────────────────────────────────── -->
+      <section class="docs-section reveal" id="how-it-works">
+        <h2 class="docs-section-title">How It Works</h2>
+        <p class="docs-p">When a message is posted in the monitored channel, Grammerly runs it through the following pipeline:</p>
+        <ol class="docs-steps">
+          <li>
+            <div class="step-body">
+              <div class="step-title">Guard checks</div>
+              <div class="step-desc">The bot ignores messages from other bots (including itself), messages that aren't in the designated channel, system messages (like join notifications), and empty messages.</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">Word extraction</div>
+              <div class="step-desc">The message text is parsed into individual words, stripping punctuation and casing to lowercase for consistent comparison.</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">Filtering</div>
+              <div class="step-desc">Words shorter than <code>MIN_WORD_LENGTH</code> characters are removed. Whitelisted words and words covered by whitelisted phrases are excluded. Duplicate words within the same message are deduplicated (only flagged once).</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">Spell-check</div>
+              <div class="step-desc">The remaining candidate words are passed to the <code>pyspellchecker</code> library. It uses a word frequency dictionary to identify likely misspellings and suggests the most probable correction for each.</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <div class="step-title">Reply &amp; track</div>
+              <div class="step-desc">If corrections were found, the bot replies to the message with each correction on its own line, prefixed with <code>*</code>. The user's correction count is then incremented in the database.</div>
+            </div>
+          </li>
+        </ol>
+        <div class="docs-callout info" style="margin-top: 24px;">
+          <div class="docs-callout-icon">&#8505;</div>
+          <div class="docs-callout-body">Grammerly <strong>does not respond to edited messages</strong>. Only the original posted message is evaluated. This is by design to prevent correction loops.</div>
+        </div>
+      </section>
+
+      <!-- ── FAQ ──────────────────────────────────────────── -->
+      <section class="docs-section reveal" id="faq">
+        <h2 class="docs-section-title">FAQ</h2>
+        <div class="cmd-list">
+          <div class="cmd-card">
+            <div class="cmd-header">
+              <span style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Why isn't Grammerly correcting messages in my channel?</span>
+            </div>
+            <p class="cmd-desc">The most common cause is that <code>TARGET_CHANNEL_ID</code> is set to a different channel than the one you're sending messages in. Double-check the channel ID in your <code>.env</code> file. Also ensure Message Content Intent is enabled in the Developer Portal.</p>
+          </div>
+          <div class="cmd-card">
+            <div class="cmd-header">
+              <span style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Why is Grammerly flagging a word that's spelled correctly?</span>
+            </div>
+            <p class="cmd-desc">The spell-checker uses a frequency-based dictionary and may not recognize slang, proper nouns, or uncommon words. Use <code>/whitelist-word</code> to permanently add any word that should never be flagged.</p>
+          </div>
+          <div class="cmd-card">
+            <div class="cmd-header">
+              <span style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Are correction counts reset when the bot restarts?</span>
+            </div>
+            <p class="cmd-desc">No. Correction counts are stored in a persistent SQLite database at <code>data/corrections.db</code>. They survive restarts, updates, and redeployments as long as the <code>data/</code> directory is preserved.</p>
+          </div>
+          <div class="cmd-card">
+            <div class="cmd-header">
+              <span style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Can I monitor multiple channels?</span>
+            </div>
+            <p class="cmd-desc">Currently, Grammerly monitors one channel per deployment as set by <code>TARGET_CHANNEL_ID</code>. Multi-channel support is not available out of the box. To monitor a different channel, update <code>TARGET_CHANNEL_ID</code> and restart the bot.</p>
+          </div>
+          <div class="cmd-card">
+            <div class="cmd-header">
+              <span style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Does Grammerly store message content?</span>
+            </div>
+            <p class="cmd-desc">No. Grammerly only stores user IDs and correction counts. It does not log, store, or transmit any message content. See the <a href="privacy.html" style="color:var(--accent-color); text-decoration: underline; text-underline-offset: 2px;">Privacy Policy</a> for full details.</p>
+          </div>
+          <div class="cmd-card">
+            <div class="cmd-header">
+              <span style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Can I replace the spell-checker with a custom one?</span>
+            </div>
+            <p class="cmd-desc">Yes. Swap out <code>services/spellcheck.py</code> with any implementation that exposes the <code>find_corrections(content: str) → list[tuple[str, str]]</code> interface and the bot's listener will use it automatically.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer id="footer" role="contentinfo">
+  <div class="wave-top-footer">
+    <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <rect width="1440" height="100" fill="#F3F3F1"/>
+      <path d="M0,50 C200,100 400,0 600,50 C800,100 1000,0 1200,42 C1320,62 1400,16 1440,50 L1440,100 L0,100 Z" fill="#0E0E0D"/>
+    </svg>
+  </div>
+  <div class="container footer-content">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="logo.PNG" alt="Grammerly" class="footer-logo-img" />
+          <span class="footer-logo-wordmark">G r a m m e r l y</span>
+        </div>
+        <p class="footer-tagline">
+          The grammar vigilante your server never asked for, but absolutely needs.
+        </p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Product</p>
+          <ul>
+            <li><a href="#">Invite Bot</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Support</p>
+          <ul>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="#">Discord Server</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <p class="footer-nav-heading">Legal</p>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="privacy.html#terms">Terms of Service</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 Grammerly. All rights reserved.</p>
+      <a href="#" class="footer-invite">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M7 2 L7 12 M2 7 L12 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Invite to Discord
+      </a>
+    </div>
+  </div>
+</footer>
+
+<div id="cookieBanner" role="dialog" aria-label="Cookie consent" aria-modal="true">
+  <p class="cookie-text"><strong>We use cookies.</strong> This site uses cookies to measure performance and improve your experience.</p>
+  <div class="cookie-actions">
+    <button class="cookie-btn-decline" id="cookieDecline">Decline</button>
+    <button class="cookie-btn-accept" id="cookieAccept">Accept</button>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script src="transitions.js"></script>
+<script>
+  (function () {
+    var sidebar = document.querySelector('.docs-sidebar');
+    var links = sidebar ? sidebar.querySelectorAll('a[href^="#"]') : [];
+    var sections = [];
+    links.forEach(function (a) {
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) sections.push({ el: el, a: a });
+    });
+    function updateActive() {
+      var top = window.scrollY + window.innerHeight * 0.25 + 96;
+      var active = null;
+      sections.forEach(function (s) {
+        if (s.el.getBoundingClientRect().top + window.scrollY <= top) active = s;
+      });
+      links.forEach(function (a) { a.classList.remove('active'); });
+      if (active) active.a.classList.add('active');
+    }
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+  })();
+</script>
+
+</body>
+</html>
