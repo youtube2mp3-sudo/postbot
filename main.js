@@ -325,3 +325,128 @@ if (statusSection) {
 
   setTimeout(cycle, 800);
 })();
+
+// ── Server carousel ────────────────────────────────────────────
+(function () {
+  var track = document.getElementById('carouselTrack');
+  if (!track) return;
+
+  var ICON_BASE = 'https://cdn.discordapp.com/icons/';
+  var CARD_W    = 210 + 14; // card min-width + gap
+
+  /* Build one card element */
+  function makeCard(guild) {
+    var card = document.createElement('div');
+    card.className = 'carousel-card';
+    card.setAttribute('aria-label', guild.name);
+
+    var iconDiv = document.createElement('div');
+    iconDiv.className = 'carousel-icon';
+
+    if (guild.icon_url) {
+      var img = document.createElement('img');
+      img.alt = guild.name;
+      img.loading = 'lazy';
+      img.onload  = function () { iconDiv.classList.add('carousel-icon--loaded'); };
+      img.onerror = function () {
+        iconDiv.removeChild(img);
+        iconDiv.textContent = (guild.name || '?')[0].toUpperCase();
+      };
+      img.src = guild.icon_url;
+      iconDiv.appendChild(img);
+    } else {
+      iconDiv.textContent = (guild.name || '?')[0].toUpperCase();
+    }
+
+    var info = document.createElement('div');
+    info.className = 'carousel-info';
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'carousel-name';
+    nameEl.textContent = guild.name || 'Unknown Server';
+
+    var meta = document.createElement('div');
+    meta.className = 'carousel-meta';
+
+    var members = guild.member_count != null ? Number(guild.member_count).toLocaleString('en-US') : '—';
+    var corrs   = guild.corrections   != null ? Number(guild.corrections  ).toLocaleString('en-US') : '—';
+
+    meta.innerHTML =
+      '<div class="carousel-stat">' +
+        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none">' +
+          '<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-3.314 0-6 1.567-6 3.5V14h12v-1.5c0-1.933-2.686-3.5-6-3.5z" fill="currentColor"/>' +
+        '</svg>' +
+        '<span>' + members + ' members</span>' +
+      '</div>' +
+      '<div class="carousel-stat">' +
+        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none">' +
+          '<path d="M2 1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5l-3 3V2a1 1 0 0 1 1-1z" fill="currentColor"/>' +
+        '</svg>' +
+        '<span>' + corrs + ' corrections</span>' +
+      '</div>';
+
+    info.appendChild(nameEl);
+    info.appendChild(meta);
+    card.appendChild(iconDiv);
+    card.appendChild(info);
+    return card;
+  }
+
+  /* Show skeleton placeholders while loading */
+  function showSkeletons(n) {
+    for (var i = 0; i < n; i++) {
+      var sk = document.createElement('div');
+      sk.className = 'carousel-skeleton';
+      track.appendChild(sk);
+    }
+  }
+
+  /* Render carousel from guilds array */
+  function renderCarousel(guilds) {
+    track.innerHTML = '';
+    if (!guilds || guilds.length === 0) {
+      document.getElementById('server-carousel').style.display = 'none';
+      return;
+    }
+
+    /* Need enough cards to fill viewport * 2 for seamless loop.
+       Duplicate the list until we have at least 2x viewport worth. */
+    var needed = Math.max(12, guilds.length);
+    var padded = [];
+    while (padded.length < needed * 2) {
+      padded = padded.concat(guilds);
+    }
+    /* Render exactly double the padded set (first half = display, second = seamless clone) */
+    var totalCards = padded.length;
+    padded.forEach(function (g) { track.appendChild(makeCard(g)); });
+
+    /* Set CSS width and start animation */
+    var halfW = totalCards / 2 * CARD_W;
+    track.style.width = (halfW * 2) + 'px';
+
+    /* Speed: ~18px/s, but clamp 20s–80s */
+    var duration = Math.min(80, Math.max(20, Math.round(halfW / 80)));
+    track.style.setProperty('--carousel-duration', duration + 's');
+    track.classList.add('carousel-track--animate');
+  }
+
+  /* Show skeletons immediately */
+  showSkeletons(8);
+
+  /* Fetch real data */
+  fetch('/servers.json?_=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (data && Array.isArray(data.guilds) && data.guilds.length > 0) {
+        renderCarousel(data.guilds);
+      } else {
+        /* No data yet — hide the section cleanly */
+        var section = document.getElementById('server-carousel');
+        if (section) section.style.display = 'none';
+      }
+    })
+    .catch(function () {
+      var section = document.getElementById('server-carousel');
+      if (section) section.style.display = 'none';
+    });
+})();
